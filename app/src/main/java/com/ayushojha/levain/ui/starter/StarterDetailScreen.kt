@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.ayushojha.levain.appContainer
 import com.ayushojha.levain.data.HealthObservation
 import com.ayushojha.levain.ui.containerViewModel
 import com.ayushojha.levain.ui.formatTimestamp
@@ -47,16 +48,17 @@ fun StarterDetailScreen(
     val timelineViewModel = containerViewModel(key = "timeline-$starterId") {
         TimelineViewModel(it.repository, starterId)
     }
-    val nameViewModel = containerViewModel(key = "starter-name-$starterId") {
-        StarterNameViewModel(it.repository, starterId)
+    val headerViewModel = containerViewModel(key = "starter-header-$starterId") {
+        StarterHeaderViewModel(it.repository, starterId)
     }
+    val clock = androidx.compose.ui.platform.LocalContext.current.appContainer.clock
     val timeline by timelineViewModel.uiState.collectAsStateWithLifecycle()
-    val starterName by nameViewModel.name.collectAsStateWithLifecycle()
+    val starter by headerViewModel.starter.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(starterName) },
+                title = { Text(starter?.name ?: "") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
@@ -71,6 +73,13 @@ fun StarterDetailScreen(
         },
     ) { padding ->
         Column(Modifier.padding(padding).fillMaxSize()) {
+            starter?.programStartedAtEpochMs?.let { startedAt ->
+                ProgramCard(
+                    programStartedAt = java.time.Instant.ofEpochMilli(startedAt),
+                    now = clock.instant(),
+                    onGraduate = headerViewModel::graduate,
+                )
+            }
             Row(
                 Modifier.fillMaxWidth().padding(16.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -144,3 +153,38 @@ private fun observationDetail(observation: HealthObservation): String = buildLis
     observation.smell?.let { add("smell: ${it.name.lowercase()}") }
     observation.note?.let { add(it) }
 }.joinToString(" · ")
+
+@Composable
+private fun ProgramCard(
+    programStartedAt: java.time.Instant,
+    now: java.time.Instant,
+    onGraduate: () -> Unit,
+) {
+    val day = com.ayushojha.levain.domain.StarterProgram.currentDay(programStartedAt, now)
+    val complete = com.ayushojha.levain.domain.StarterProgram.isComplete(programStartedAt, now)
+    val content = com.ayushojha.levain.domain.StarterProgram.DAYS[day - 1]
+
+    Card(Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(top = 12.dp)) {
+        Column(Modifier.padding(16.dp)) {
+            Text(
+                if (complete) "Program complete 🎓" else "Day $day of 7 — ${content.title}",
+                style = MaterialTheme.typography.titleMedium,
+            )
+            Text(
+                if (complete) {
+                    "Seven days done! If it's doubling reliably and smells tangy-sweet, it's officially alive."
+                } else {
+                    content.instruction
+                },
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 6.dp),
+            )
+            if (complete) {
+                FilledTonalButton(onClick = onGraduate, modifier = Modifier.padding(top = 10.dp)) {
+                    Text("Graduate to a regular starter")
+                }
+            }
+        }
+    }
+}

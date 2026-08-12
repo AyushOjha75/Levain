@@ -34,6 +34,26 @@ Each Starter has a configurable feeding interval per lifecycle state (e.g. every
 ### Timeline
 The chronological history of a single Starter: Feedings, Health observations, and Bakes interleaved. The v1 history view — charts and richer trends are out of scope for v1.
 
+### Avatar
+The illustrated face of a Starter: a parametric jar character drawn in code (Compose Canvas), not image assets. Its **Mood** is derived from health data (recent rise ratings, overdue state, lifecycle state) — the moods are: **beaming** (recently peaked), **content** (default), **sleepy** (recently sluggish/flat), **hungry** (due or overdue), **resting** (dormant), **retired** (archived). Presentation-layer vocabulary; moods are derived, never stored.
+
+### Wizard
+A guided multi-step flow: *first-feed onboarding* (set up an existing Starter), *create-a-starter* (7-day from-scratch program with built-in reminders), *troubleshooting* (symptom → diagnosis → plan), *bake-day* (deferred — needs its own design pass).
+
+### Streak / Milestone
+Continuity and age celebrations ("fed on time 14 feedings running", "Rye is 100 days old"). Derived from the Timeline, never stored. A streak counts consecutive Feedings whose **fed timestamp** (not log time — back-filling preserves it) is on or before that feeding's due time; one late feeding resets it. A DORMANT starter's streak pauses rather than breaks; ARCHIVED starters have no streaks.
+
+### Tip
+Contextual micro-education attached to a specific moment (a smell picked, a rise rating chosen, a state change). Bundled with the app, not fetched. Distinct from **School articles** (longer bundled reads, later).
+
+## Notes on scope (v2 — "the product turn", superseding parts of v1 scope)
+
+- Repositioned: Play Store distribution, still local-first — **no accounts, no backend** (that boundary survives the pivot).
+- Aesthetic: warm artisanal + starter Avatars with moods; fun = avatars, streaks/milestones, celebration moments, playful voice. **No badges/achievements.**
+- Gadgets: levain build calculator, due-status home-screen widget first; baker's-percentage calculator later; proofing timer and photo timelapse deferred.
+- Wizard order: first-feed onboarding → create-a-starter → troubleshooting → bake-day.
+- Content: contextual Tips first (bundled), School articles later; Claude drafts, the baker fact-checks.
+
 ## Notes on scope (v1)
 
 - v1 includes the full loop: dashboard, Feedings, Health observations, reminders, Timeline, **and Bake logging**.

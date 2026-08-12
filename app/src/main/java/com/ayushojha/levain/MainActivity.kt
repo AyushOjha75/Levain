@@ -16,9 +16,12 @@ import com.ayushojha.levain.ui.bake.BakeScreen
 import com.ayushojha.levain.ui.dashboard.DashboardScreen
 import com.ayushojha.levain.ui.feeding.FeedingScreen
 import com.ayushojha.levain.ui.observation.ObservationScreen
+import com.ayushojha.levain.ui.calculator.CalculatorScreen
 import com.ayushojha.levain.ui.starter.StarterDetailScreen
 import com.ayushojha.levain.ui.starter.StarterEditorScreen
 import com.ayushojha.levain.ui.theme.LevainTheme
+import com.ayushojha.levain.ui.wizard.StarterWizardScreen
+import com.ayushojha.levain.ui.wizard.TroubleshootingScreen
 
 class MainActivity : ComponentActivity() {
 
@@ -38,12 +41,23 @@ class MainActivity : ComponentActivity() {
                 NavHost(navController = nav, startDestination = "dashboard") {
                     composable("dashboard") {
                         DashboardScreen(
-                            onAddStarter = { nav.navigate("starter/new") },
+                            onAddStarter = { nav.navigate("wizard") },
                             onOpenStarter = { id -> nav.navigate("starter/$id") },
+                            onOpenTools = { nav.navigate("tools") },
+                            onOpenTroubleshoot = { nav.navigate("troubleshoot") },
                         )
                     }
-                    composable("starter/new") {
-                        StarterEditorScreen(starterId = null, onDone = { nav.popBackStack() })
+                    composable("wizard") {
+                        StarterWizardScreen(onDone = { createdId ->
+                            nav.popBackStack()
+                            createdId?.let { nav.navigate("starter/$it") }
+                        })
+                    }
+                    composable("tools") {
+                        CalculatorScreen(onBack = { nav.popBackStack() })
+                    }
+                    composable("troubleshoot") {
+                        TroubleshootingScreen(onBack = { nav.popBackStack() })
                     }
                     composable(
                         "starter/{id}/edit",

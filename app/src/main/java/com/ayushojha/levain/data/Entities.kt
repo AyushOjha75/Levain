@@ -27,6 +27,11 @@ data class Starter(
      * dueAt differs from this value.
      */
     val lastNotifiedDueAtEpochMs: Long? = null,
+    /**
+     * Non-null while this Starter is inside the create-a-starter 7-day
+     * program; the current program day derives from this instant.
+     */
+    val programStartedAtEpochMs: Long? = null,
 )
 
 @Entity(

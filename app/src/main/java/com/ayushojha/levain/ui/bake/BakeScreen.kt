@@ -50,7 +50,14 @@ fun BakeScreen(starterId: Long, onDone: () -> Unit) {
         uri?.let { viewModel.setPhotoPath(photoStore.importPhoto(it)) }
     }
 
-    LaunchedEffect(state.saved) { if (state.saved) onDone() }
+    // A 5-star bake earns its confetti before leaving the screen.
+    LaunchedEffect(state.saved) {
+        if (state.saved && state.outcomeRating != 5) onDone()
+    }
+
+    if (state.saved && state.outcomeRating == 5) {
+        com.ayushojha.levain.ui.celebration.ConfettiOverlay(onFinished = onDone)
+    }
 
     Scaffold(
         topBar = {

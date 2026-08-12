@@ -47,6 +47,9 @@ interface LevainDao {
     @Query("SELECT * FROM feeding WHERE starterId = :starterId ORDER BY timestampEpochMs DESC LIMIT 1")
     suspend fun getLastFeeding(starterId: Long): Feeding?
 
+    @Query("SELECT * FROM feeding")
+    fun observeAllFeedings(): Flow<List<Feeding>>
+
     @Query(
         "SELECT * FROM feeding WHERE id IN " +
             "(SELECT id FROM feeding AS f WHERE f.timestampEpochMs = " +

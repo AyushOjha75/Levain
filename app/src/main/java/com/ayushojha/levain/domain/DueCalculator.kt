@@ -32,7 +32,14 @@ object DueCalculator {
     fun dueAt(starter: Starter, lastFeeding: Feeding?): Instant? {
         val interval = intervalFor(starter) ?: return null
         val baseline = lastFeeding?.timestampEpochMs ?: starter.createdAtEpochMs
-        return Instant.ofEpochMilli(baseline).plus(interval)
+        val dueAt = Instant.ofEpochMilli(baseline).plus(interval)
+
+        // The 7-day program's first feeding is day 3 ("Patience day" is day 2):
+        // until then a program starter is never due, so no reminder fires and
+        // the avatar doesn't look hungry while the instructions say don't feed.
+        val programFirstFeed = starter.programStartedAtEpochMs
+            ?.let { Instant.ofEpochMilli(it).plus(Duration.ofHours(48)) }
+        return if (programFirstFeed != null && programFirstFeed.isAfter(dueAt)) programFirstFeed else dueAt
     }
 
     fun dueness(starter: Starter, lastFeeding: Feeding?, now: Instant): Dueness {

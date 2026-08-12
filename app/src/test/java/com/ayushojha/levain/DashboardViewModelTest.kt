@@ -137,6 +137,51 @@ class DashboardViewModelTest {
     }
 
     @Test
+    fun `overdue starter looks hungry`() = runTest(mainDispatcherRule.dispatcher) {
+        val id = createStarter(activeIntervalHours = 24)
+        feed(id, hoursAgo = 30)
+
+        viewModel().uiState.test {
+            val card = awaitMatching { it.cards.isNotEmpty() }.cards.single { it.starter.id == id }
+            assertEquals(com.ayushojha.levain.domain.Mood.HUNGRY, card.mood)
+        }
+    }
+
+    @Test
+    fun `recently sluggish starter looks sleepy`() = runTest(mainDispatcherRule.dispatcher) {
+        val id = createStarter(activeIntervalHours = 24)
+        feed(id, hoursAgo = 2)
+        app.repository.logObservation(
+            HealthObservation(
+                starterId = id,
+                timestampEpochMs = app.clock.instant().toEpochMilli(),
+                riseRating = RiseRating.SLUGGISH,
+            )
+        )
+
+        viewModel().uiState.test {
+            val card = awaitMatching { it.cards.isNotEmpty() }.cards.single { it.starter.id == id }
+            assertEquals(com.ayushojha.levain.domain.Mood.SLEEPY, card.mood)
+        }
+    }
+
+    @Test
+    fun `on-time feedings build a streak and a late one resets it`() = runTest(mainDispatcherRule.dispatcher) {
+        val id = createStarter(activeIntervalHours = 24)
+        // Three on-time feedings 24h apart... but the first gap is 30h — late.
+        feed(id, hoursAgo = 78) // late relative to next (30h gap)
+        feed(id, hoursAgo = 48)
+        feed(id, hoursAgo = 24)
+        feed(id, hoursAgo = 0)
+
+        viewModel().uiState.test {
+            val card = awaitMatching { it.cards.isNotEmpty() }.cards.single { it.starter.id == id }
+            // The 30h gap reset the run; the three feedings since are the streak.
+            assertEquals(3, card.vitals.feedingStreak)
+        }
+    }
+
+    @Test
     fun `card carries last feeding and last observation`() = runTest(mainDispatcherRule.dispatcher) {
         val id = createStarter()
         feed(id, hoursAgo = 3)

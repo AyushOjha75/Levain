@@ -1,5 +1,6 @@
 package com.ayushojha.levain.ui.dashboard
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,12 +9,15 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Calculate
+import androidx.compose.material.icons.filled.HealthAndSafety
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -22,91 +26,189 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ayushojha.levain.appContainer
-import com.ayushojha.levain.data.LifecycleState
 import com.ayushojha.levain.domain.DueStatus
+import com.ayushojha.levain.domain.Mood
+import com.ayushojha.levain.ui.avatar.StarterAvatar
+import com.ayushojha.levain.ui.celebration.ConfettiOverlay
 import com.ayushojha.levain.ui.containerViewModel
 import com.ayushojha.levain.ui.formatAgo
 import com.ayushojha.levain.ui.formatDue
+import com.ayushojha.levain.ui.moodLine
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(
     onAddStarter: () -> Unit,
     onOpenStarter: (Long) -> Unit,
+    onOpenTools: () -> Unit,
+    onOpenTroubleshoot: () -> Unit,
 ) {
     val viewModel = containerViewModel { DashboardViewModel(it.repository, it.clock) }
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    var celebratedMilestone by androidx.compose.runtime.saveable.rememberSaveable {
+        mutableStateOf<String?>(null)
+    }
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Levain", fontWeight = FontWeight.SemiBold) }) },
+        topBar = {
+            TopAppBar(
+                title = { Text("Levain", style = MaterialTheme.typography.headlineMedium) },
+                actions = {
+                    IconButton(onClick = onOpenTools) {
+                        Icon(Icons.Filled.Calculate, contentDescription = "Baker's tools")
+                    }
+                    IconButton(onClick = onOpenTroubleshoot) {
+                        Icon(Icons.Filled.HealthAndSafety, contentDescription = "Starter doctor")
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                ),
+            )
+        },
         floatingActionButton = {
-            FloatingActionButton(onClick = onAddStarter) {
+            FloatingActionButton(
+                onClick = onAddStarter,
+                containerColor = MaterialTheme.colorScheme.primary,
+            ) {
                 Icon(Icons.Filled.Add, contentDescription = "Add starter")
             }
         },
+        containerColor = MaterialTheme.colorScheme.background,
     ) { padding ->
-        if (state.cards.isEmpty()) {
-            Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("No starters yet", style = MaterialTheme.typography.titleMedium)
-                    Text(
-                        "Add your first starter to start tracking",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
+        Box(Modifier.fillMaxSize().padding(padding)) {
+            if (state.cards.isEmpty()) {
+                EmptyDashboard()
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    state.milestoneBanner?.let { banner ->
+                        item(key = "milestone") { MilestoneBanner(banner) }
+                    }
+                    items(state.cards, key = { it.starter.id }) { card ->
+                        StarterCardItem(card = card, onClick = { onOpenStarter(card.starter.id) })
+                    }
+                    item(key = "fact") {
+                        FactCard(state.factOfTheDay)
+                    }
                 }
             }
-        } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize().padding(padding),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                items(state.cards, key = { it.starter.id }) { card ->
-                    StarterCardItem(card = card, onClick = { onOpenStarter(card.starter.id) })
-                }
+
+            // One confetti burst per milestone per dashboard visit.
+            val banner = state.milestoneBanner
+            if (banner != null && celebratedMilestone != banner) {
+                ConfettiOverlay(onFinished = { celebratedMilestone = banner })
             }
         }
     }
 }
 
 @Composable
+private fun EmptyDashboard() {
+    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            StarterAvatar(
+                mood = Mood.CONTENT,
+                modifier = Modifier.size(120.dp),
+                darkTheme = isSystemInDarkTheme(),
+            )
+            Text(
+                "No starters yet",
+                style = MaterialTheme.typography.headlineSmall,
+                modifier = Modifier.padding(top = 16.dp),
+            )
+            Text(
+                "Add your first starter — it'll live right here.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 4.dp),
+            )
+        }
+    }
+}
+
+@Composable
+private fun MilestoneBanner(text: String) {
+    Surface(
+        color = MaterialTheme.colorScheme.secondaryContainer,
+        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+        shape = MaterialTheme.shapes.medium,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Text(
+            text,
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(16.dp),
+        )
+    }
+}
+
+@Composable
 private fun StarterCardItem(card: StarterCard, onClick: () -> Unit) {
     val clock = LocalContext.current.appContainer.clock
-    Card(onClick = onClick, colors = CardDefaults.cardColors()) {
-        Column(Modifier.fillMaxWidth().padding(16.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    card.starter.name,
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.weight(1f),
-                )
-                DueBadge(card)
-            }
-            Row(Modifier.padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                StateChip(card.starter.state)
-                card.lastFeeding?.let {
+    Card(onClick = onClick) {
+        Row(
+            Modifier.fillMaxWidth().padding(14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            StarterAvatar(
+                mood = card.mood,
+                modifier = Modifier.size(72.dp),
+                darkTheme = isSystemInDarkTheme(),
+            )
+            Column(Modifier.weight(1f).padding(start = 14.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        "fed ${formatAgo(it.timestampEpochMs, clock)}",
-                        style = MaterialTheme.typography.bodyMedium,
+                        card.starter.name,
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier.weight(1f),
+                    )
+                    DueBadge(card)
+                }
+                Text(
+                    moodLine(card.starter.name, card.mood),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 2.dp),
+                )
+                Row(
+                    Modifier.padding(top = 6.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    if (card.vitals.feedingStreak >= 3) {
+                        Text(
+                            "🔥 ${card.vitals.feedingStreak}",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.primary,
+                        )
+                    }
+                    Text(
+                        "${card.vitals.ageDays}d old",
+                        style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
-                }
-                card.lastObservation?.let {
-                    Text(
-                        it.riseRating.name.lowercase(),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.secondary,
-                    )
+                    card.lastFeeding?.let {
+                        Text(
+                            "fed ${formatAgo(it.timestampEpochMs, clock)}",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
                 }
             }
         }
@@ -150,14 +252,16 @@ private fun DueBadge(card: StarterCard) {
 }
 
 @Composable
-private fun StateChip(state: LifecycleState) {
-    Text(
-        when (state) {
-            LifecycleState.ACTIVE -> "active"
-            LifecycleState.DORMANT -> "dormant"
-            LifecycleState.ARCHIVED -> "archived"
-        },
-        style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
+private fun FactCard(fact: String) {
+    Surface(
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        shape = MaterialTheme.shapes.medium,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Column(Modifier.padding(16.dp)) {
+            Text("Did you know?", style = MaterialTheme.typography.titleSmall)
+            Text(fact, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(top = 4.dp))
+        }
+    }
 }

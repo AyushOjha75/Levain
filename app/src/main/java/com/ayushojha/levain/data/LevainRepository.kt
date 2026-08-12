@@ -17,6 +17,7 @@ class LevainRepository(
     fun observeStarters(): Flow<List<Starter>> = dao.observeStarters()
     fun observeStarter(id: Long): Flow<Starter?> = dao.observeStarter(id)
     fun observeLastFeedings(): Flow<List<Feeding>> = dao.observeLastFeedings()
+    fun observeAllFeedings(): Flow<List<Feeding>> = dao.observeAllFeedings()
     fun observeLastObservations(): Flow<List<HealthObservation>> = dao.observeLastObservations()
     fun observeFeedings(starterId: Long): Flow<List<Feeding>> = dao.observeFeedings(starterId)
     fun observeObservations(starterId: Long): Flow<List<HealthObservation>> = dao.observeObservations(starterId)

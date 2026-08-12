@@ -28,6 +28,17 @@
             android:exported="false" />
 
         <receiver
+            android:name=".widget.DueWidgetReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/due_widget_info" />
+        </receiver>
+
+        <receiver
             android:name=".reminders.BootCompletedReceiver"
             android:exported="false">
             <intent-filter>

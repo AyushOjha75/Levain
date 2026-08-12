@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import androidx.glance.appwidget.updateAll
 import com.ayushojha.levain.MainActivity
 import com.ayushojha.levain.R
 import com.ayushojha.levain.appContainer
@@ -22,6 +23,14 @@ class AlarmDueScheduler(private val context: Context) : DueScheduler {
 
     private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
+    // Every (re)schedule means dueness changed — refresh the home-screen
+    // widget so it never shows a starter as overdue after it was just fed.
+    private fun refreshWidget() {
+        CoroutineScope(Dispatchers.IO).launch {
+            runCatching { com.ayushojha.levain.widget.DueWidget().updateAll(context) }
+        }
+    }
+
     private fun pendingIntent(): PendingIntent = PendingIntent.getBroadcast(
         context,
         0,
@@ -31,6 +40,7 @@ class AlarmDueScheduler(private val context: Context) : DueScheduler {
 
     override fun scheduleExact(at: Instant) {
         val canExact = Build.VERSION.SDK_INT < Build.VERSION_CODES.S || alarmManager.canScheduleExactAlarms()
+        refreshWidget()
         if (canExact) {
             alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at.toEpochMilli(), pendingIntent())
         } else {
@@ -39,6 +49,7 @@ class AlarmDueScheduler(private val context: Context) : DueScheduler {
     }
 
     override fun cancel() {
+        refreshWidget()
         alarmManager.cancel(pendingIntent())
     }
 }

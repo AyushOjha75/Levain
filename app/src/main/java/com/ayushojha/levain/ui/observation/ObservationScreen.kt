@@ -84,6 +84,12 @@ fun ObservationScreen(starterId: Long, onDone: () -> Unit) {
                 }
             }
 
+            state.riseRating?.let { rating ->
+                com.ayushojha.levain.domain.Tips.riseTips[rating]?.let { tip ->
+                    TipCard(tip)
+                }
+            }
+
             OutlinedTextField(
                 value = state.timeToPeakMinutes?.let { (it / 60.0).let { h -> if (h % 1.0 == 0.0) h.roundToInt().toString() else "%.1f".format(h) } } ?: "",
                 onValueChange = { text ->
@@ -117,6 +123,12 @@ fun ObservationScreen(starterId: Long, onDone: () -> Unit) {
                 }
             }
 
+            state.smell?.let { smell ->
+                com.ayushojha.levain.domain.Tips.smellTips[smell]?.let { tip ->
+                    TipCard(tip)
+                }
+            }
+
             OutlinedButton(
                 onClick = {
                     photoPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
@@ -146,5 +158,21 @@ fun ObservationScreen(starterId: Long, onDone: () -> Unit) {
                 Text("Save observation")
             }
         }
+    }
+}
+
+@Composable
+internal fun TipCard(tip: String) {
+    androidx.compose.material3.Surface(
+        color = MaterialTheme.colorScheme.secondaryContainer,
+        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+        shape = MaterialTheme.shapes.medium,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Text(
+            "💡 $tip",
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(12.dp),
+        )
     }
 }
