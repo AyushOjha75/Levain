@@ -5,11 +5,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -61,7 +59,7 @@ fun DashboardScreen(
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text("No starters yet", style = MaterialTheme.typography.titleMedium)
                     Text(
-                        "Add your first culture to start tracking",
+                        "Add your first starter to start tracking",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -94,7 +92,6 @@ private fun StarterCardItem(card: StarterCard, onClick: () -> Unit) {
                 )
                 DueBadge(card)
             }
-            Spacer(Modifier.width(0.dp))
             Row(Modifier.padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 StateChip(card.starter.state)
                 card.lastFeeding?.let {
@@ -156,8 +153,8 @@ private fun DueBadge(card: StarterCard) {
 private fun StateChip(state: LifecycleState) {
     Text(
         when (state) {
-            LifecycleState.ACTIVE -> "counter"
-            LifecycleState.DORMANT -> "fridge"
+            LifecycleState.ACTIVE -> "active"
+            LifecycleState.DORMANT -> "dormant"
             LifecycleState.ARCHIVED -> "archived"
         },
         style = MaterialTheme.typography.bodyMedium,

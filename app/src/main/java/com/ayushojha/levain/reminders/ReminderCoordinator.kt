@@ -56,15 +56,24 @@ class ReminderCoordinator(
      */
     suspend fun onAlarmFired(now: Instant) {
         val horizon = now.plus(coalesceWindow)
-        val due = dao.getStarters().mapNotNull { starter ->
-            val dueAt = DueCalculator.dueAt(starter, dao.getLastFeeding(starter.id)) ?: return@mapNotNull null
-            val alreadyNotified = starter.lastNotifiedDueAtEpochMs == dueAt.toEpochMilli()
-            if (!dueAt.isAfter(horizon) && !alreadyNotified) starter to dueAt else null
+        val newlyDue = mutableListOf<Pair<com.ayushojha.levain.data.Starter, Instant>>()
+        val stillDue = mutableListOf<String>()
+        dao.getStarters().forEach { starter ->
+            val dueAt = DueCalculator.dueAt(starter, dao.getLastFeeding(starter.id)) ?: return@forEach
+            if (dueAt.isAfter(horizon)) return@forEach
+            if (starter.lastNotifiedDueAtEpochMs == dueAt.toEpochMilli()) {
+                stillDue += starter.name // notified before but still unfed
+            } else {
+                newlyDue += starter to dueAt
+            }
         }
 
-        if (due.isNotEmpty()) {
-            presenter.showDueNotification(due.map { it.first.name })
-            due.forEach { (starter, dueAt) ->
+        if (newlyDue.isNotEmpty()) {
+            // One coalesced notification (fixed id, so it replaces): it must
+            // carry every due starter, or the replacement would silently drop
+            // the still-due ones from an earlier firing.
+            presenter.showDueNotification(newlyDue.map { it.first.name } + stillDue)
+            newlyDue.forEach { (starter, dueAt) ->
                 dao.updateStarter(starter.copy(lastNotifiedDueAtEpochMs = dueAt.toEpochMilli()))
             }
         }

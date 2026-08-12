@@ -9,9 +9,11 @@ import com.ayushojha.levain.data.Starter
 import com.ayushojha.levain.domain.DueCalculator
 import com.ayushojha.levain.domain.Dueness
 import java.time.Clock
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 
 data class StarterCard(
@@ -30,11 +32,21 @@ class DashboardViewModel(
     private val clock: Clock,
 ) : ViewModel() {
 
+    // Dueness is a function of the clock, so the dashboard must recompute even
+    // when nothing is written — a starter crosses its due time just by sitting there.
+    private val minuteTicker = flow {
+        while (true) {
+            emit(Unit)
+            delay(60_000)
+        }
+    }
+
     val uiState: StateFlow<DashboardUiState> = combine(
         repository.observeStarters(),
         repository.observeLastFeedings(),
         repository.observeLastObservations(),
-    ) { starters, lastFeedings, lastObservations ->
+        minuteTicker,
+    ) { starters, lastFeedings, lastObservations, _ ->
         val feedingByStarter = lastFeedings.associateBy { it.starterId }
         val observationByStarter = lastObservations.associateBy { it.starterId }
         DashboardUiState(

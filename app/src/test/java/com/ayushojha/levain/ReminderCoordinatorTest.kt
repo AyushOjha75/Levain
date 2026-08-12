@@ -122,6 +122,25 @@ class ReminderCoordinatorTest {
     }
 
     @Test
+    fun `later notification keeps still-due starters instead of dropping them`() = runTest(mainDispatcherRule.dispatcher) {
+        val rye = createStarter("Rye", activeIntervalHours = 24)
+        val white = createStarter("White", activeIntervalHours = 26)
+        feedNow(rye)
+        feedNow(white)
+
+        // Rye comes due first and is notified alone.
+        app.clock.advanceBy(Duration.ofHours(24))
+        app.repository.onAlarmFired()
+        assertEquals(listOf(listOf("Rye")), app.presenter.notifications)
+
+        // White comes due 2h later; rye is still unfed. The replacing
+        // notification must carry both names, not silently drop Rye.
+        app.clock.advanceBy(Duration.ofHours(2))
+        app.repository.onAlarmFired()
+        assertEquals(setOf("Rye", "White"), app.presenter.notifications.last().toSet())
+    }
+
+    @Test
     fun `archived starters never schedule alarms`() = runTest(mainDispatcherRule.dispatcher) {
         val id = createStarter("Old friend", state = LifecycleState.ARCHIVED)
         feedNow(id)

@@ -124,6 +124,19 @@ class DashboardViewModelTest {
     }
 
     @Test
+    fun `due status updates as time passes without any new writes`() = runTest(mainDispatcherRule.dispatcher) {
+        val id = createStarter(activeIntervalHours = 24)
+        feed(id, hoursAgo = 0)
+
+        viewModel().uiState.test {
+            awaitMatching { it.cards.any { c -> c.starter.id == id && c.dueness.status == DueStatus.OK } }
+            app.clock.advanceBy(Duration.ofHours(26)) // dashboard stays open, nothing is written
+            awaitMatching { it.cards.any { c -> c.starter.id == id && c.dueness.status == DueStatus.OVERDUE } }
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
     fun `card carries last feeding and last observation`() = runTest(mainDispatcherRule.dispatcher) {
         val id = createStarter()
         feed(id, hoursAgo = 3)
