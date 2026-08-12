@@ -1,0 +1,19 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors / IDEs
+.idea/
+.vscode/
+*.iml
+
+# Logs & env
+*.log
+.env
+.env.local
+
+# Build output (generic — refine once the stack is chosen)
+build/
+dist/
+out/
+node_modules/
