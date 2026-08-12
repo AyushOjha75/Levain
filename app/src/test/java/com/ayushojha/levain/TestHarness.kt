@@ -68,7 +68,13 @@ class TestApp(epoch: Instant = Instant.parse("2026-08-12T08:00:00Z")) {
     val db: LevainDatabase = Room.inMemoryDatabaseBuilder(
         ApplicationProvider.getApplicationContext<Context>(),
         LevainDatabase::class.java,
-    ).allowMainThreadQueries().build()
+    )
+        // Direct executors keep Room's suspend calls off real thread pools, so
+        // advanceUntilIdle() is deterministic — no CI-only races.
+        .setQueryExecutor(Runnable::run)
+        .setTransactionExecutor(Runnable::run)
+        .allowMainThreadQueries()
+        .build()
     val coordinator = ReminderCoordinator(db.levainDao(), scheduler, presenter)
     val repository = LevainRepository(db.levainDao(), coordinator, clock)
 
