@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Auto Backup covers the database; photos are excluded (they exceed the
+     25MB quota) — the manual export zip is the escape hatch for them. -->
+<full-backup-content>
+    <exclude domain="file" path="photos/" />
+</full-backup-content>

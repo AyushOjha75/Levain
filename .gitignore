@@ -12,8 +12,10 @@ Thumbs.db
 .env
 .env.local
 
-# Build output (generic — refine once the stack is chosen)
+# Android / Gradle
 build/
-dist/
-out/
-node_modules/
+.gradle/
+local.properties
+*.apk
+*.aab
+captures/

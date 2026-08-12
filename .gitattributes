@@ -1,0 +1,4 @@
+# Gradle wrapper scripts must keep their native line endings on every platform.
+gradlew text eol=lf
+*.sh text eol=lf
+*.bat text eol=crlf

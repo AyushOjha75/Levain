@@ -1,20 +1,32 @@
 # Levain 🍞
 
-An app to track and maintain a sourdough starter.
+A personal Android app to track and maintain sourdough starters.
 
-## What it will do
+## What it does
 
-- Log feedings (ratio, flour type, time)
-- Track starter health — rise height, activity, smell notes
-- Remind you when the starter is due for a feed
-- Keep a history so you can spot what works
+- **Dashboard** — every Starter at a glance: lifecycle state, last feeding, last observation, due status
+- **Feedings** — two-tap logging, pre-filled from last time (ratio, flour)
+- **Health observations** — rise rating, time-to-peak, smell, photo, notes
+- **Bakes** — outcome ratings linked back to the source starter's condition
+- **Reminders** — one coalesced notification when starters come due; fired once, never nagging
+- **Timeline** — each starter's full story, chronologically
 
-## Status
+All data stays on-device. No accounts, no backend.
 
-🌱 Just started — stack not yet decided.
+The domain glossary lives in [CONTEXT.md](CONTEXT.md); the v1 spec is
+[issue #1](https://github.com/AyushOjha75/Levain/issues/1).
 
-## Development
+## Stack
+
+Kotlin · Jetpack Compose (Material 3) · Room · manual DI.
+Tests run on the JVM at the ViewModel seam (Robolectric + in-memory Room)
+with an injected `Clock` and fake alarm scheduler.
+
+## Build
 
 ```
-git clone git@github.com:AyushOjha75/Levain.git
+./gradlew :app:assembleDebug        # build APK
+./gradlew :app:testDebugUnitTest    # run the test suite
 ```
+
+Requires JDK 17 and the Android SDK (platform 34).
