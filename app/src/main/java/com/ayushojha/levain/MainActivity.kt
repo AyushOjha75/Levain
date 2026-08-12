@@ -45,7 +45,12 @@ class MainActivity : ComponentActivity() {
                             onOpenStarter = { id -> nav.navigate("starter/$id") },
                             onOpenTools = { nav.navigate("tools") },
                             onOpenTroubleshoot = { nav.navigate("troubleshoot") },
+                            onOpenSettings = { nav.navigate("settings") },
+                            onFirstRun = { nav.navigate("wizard") },
                         )
+                    }
+                    composable("settings") {
+                        com.ayushojha.levain.ui.settings.SettingsScreen(onBack = { nav.popBackStack() })
                     }
                     composable("wizard") {
                         StarterWizardScreen(onDone = { createdId ->
@@ -78,16 +83,25 @@ class MainActivity : ComponentActivity() {
                             onBack = { nav.popBackStack() },
                             onEdit = { nav.navigate("starter/$id/edit") },
                             onLogFeeding = { nav.navigate("starter/$id/feed") },
+                            onEditFeeding = { feedingId -> nav.navigate("starter/$id/feed?feedingId=$feedingId") },
                             onLogObservation = { nav.navigate("starter/$id/observe") },
                             onLogBake = { nav.navigate("starter/$id/bake") },
                         )
                     }
                     composable(
-                        "starter/{id}/feed",
-                        arguments = listOf(navArgument("id") { type = NavType.LongType }),
+                        "starter/{id}/feed?feedingId={feedingId}",
+                        arguments = listOf(
+                            navArgument("id") { type = NavType.LongType },
+                            navArgument("feedingId") {
+                                type = NavType.LongType
+                                defaultValue = -1L
+                            },
+                        ),
                     ) { entry ->
+                        val feedingId = entry.arguments!!.getLong("feedingId").takeIf { it >= 0 }
                         FeedingScreen(
                             starterId = entry.arguments!!.getLong("id"),
+                            feedingId = feedingId,
                             onDone = { nav.popBackStack() },
                         )
                     }

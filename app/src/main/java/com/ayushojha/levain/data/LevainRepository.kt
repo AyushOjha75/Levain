@@ -43,10 +43,26 @@ class LevainRepository(
     }
 
     suspend fun logFeeding(feeding: Feeding): Long {
-        val id = dao.insertFeeding(feeding)
+        // Stamp the era: streaks judge each gap against the interval that was
+        // in force when the feeding happened, not whatever it is later.
+        val stamped = if (feeding.intervalHoursAtFeeding == null) {
+            val starter = dao.getStarter(feeding.starterId)
+            val hours = starter?.let { com.ayushojha.levain.domain.DueCalculator.intervalFor(it)?.toHours()?.toInt() }
+            feeding.copy(intervalHoursAtFeeding = hours)
+        } else {
+            feeding
+        }
+        val id = dao.insertFeeding(stamped)
         reminders.reschedule(clock.instant())
         return id
     }
+
+    suspend fun updateFeeding(feeding: Feeding) {
+        dao.updateFeeding(feeding)
+        reminders.reschedule(clock.instant())
+    }
+
+    suspend fun getFeeding(id: Long): Feeding? = dao.getFeeding(id)
 
     suspend fun deleteFeeding(feeding: Feeding) {
         dao.deleteFeeding(feeding)
@@ -60,4 +76,7 @@ class LevainRepository(
     suspend fun deleteBake(bake: Bake) = dao.deleteBake(bake)
 
     suspend fun onAlarmFired() = reminders.onAlarmFired(clock.instant())
+
+    /** For flows that mutate data behind the repository's back (backup import). */
+    suspend fun rescheduleReminders() = reminders.reschedule(clock.instant())
 }

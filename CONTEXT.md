@@ -43,6 +43,12 @@ A guided multi-step flow: *first-feed onboarding* (set up an existing Starter), 
 ### Streak / Milestone
 Continuity and age celebrations ("fed on time 14 feedings running", "Rye is 100 days old"). Derived from the Timeline, never stored. A streak counts consecutive Feedings whose **fed timestamp** (not log time — back-filling preserves it) is on or before that feeding's due time; one late feeding resets it. A DORMANT starter's streak pauses rather than breaks; ARCHIVED starters have no streaks.
 
+### Backup
+The manual "export everything" escape hatch: one zip holding all data plus every photo, written wherever the user chooses. Importing a Backup replaces everything. A backup is only a backup if it's restorable.
+
+### Insights
+Per-Starter derived statistics shown on its detail view: average feeding gap, on-time rate (each gap judged against its own era's interval), rise trend, bake count and average outcome. Derived from the Timeline, never stored.
+
 ### Tip
 Contextual micro-education attached to a specific moment (a smell picked, a rise rating chosen, a state change). Bundled with the app, not fetched. Distinct from **School articles** (longer bundled reads, later).
 

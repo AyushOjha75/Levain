@@ -16,6 +16,8 @@ data class BakeFormState(
     val outcomeRating: Int? = null,
     val photoPath: String? = null,
     val note: String = "",
+    /** Bakes are often logged after the fact — "the loaf from Tuesday". */
+    val daysAgo: Int = 0,
     val saved: Boolean = false,
 ) {
     val canSave: Boolean get() = outcomeRating != null
@@ -34,6 +36,7 @@ class BakeViewModel(
     fun setOutcomeRating(rating: Int) = _uiState.update { it.copy(outcomeRating = rating.coerceIn(1, 5)) }
     fun setPhotoPath(path: String?) = _uiState.update { it.copy(photoPath = path) }
     fun setNote(note: String) = _uiState.update { it.copy(note = note) }
+    fun setDaysAgo(days: Int) = _uiState.update { it.copy(daysAgo = days.coerceIn(0, 365)) }
 
     fun save() {
         val state = _uiState.value
@@ -42,7 +45,9 @@ class BakeViewModel(
             repository.logBake(
                 Bake(
                     starterId = starterId,
-                    timestampEpochMs = clock.instant().toEpochMilli(),
+                    timestampEpochMs = clock.instant()
+                        .minus(java.time.Duration.ofDays(state.daysAgo.toLong()))
+                        .toEpochMilli(),
                     levainNotes = state.levainNotes.ifBlank { null },
                     outcomeRating = outcomeRating,
                     photoPath = state.photoPath,

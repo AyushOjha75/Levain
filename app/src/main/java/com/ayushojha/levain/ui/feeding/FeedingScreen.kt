@@ -25,9 +25,9 @@ import com.ayushojha.levain.ui.containerViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FeedingScreen(starterId: Long, onDone: () -> Unit) {
-    val viewModel = containerViewModel(key = "feeding-$starterId") {
-        FeedingViewModel(it.repository, it.clock, starterId)
+fun FeedingScreen(starterId: Long, feedingId: Long? = null, onDone: () -> Unit) {
+    val viewModel = containerViewModel(key = "feeding-$starterId-$feedingId") {
+        FeedingViewModel(it.repository, it.clock, starterId, feedingId)
     }
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -36,7 +36,7 @@ fun FeedingScreen(starterId: Long, onDone: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Log feeding") },
+                title = { Text(if (state.editing) "Edit feeding" else "Log feeding") },
                 navigationIcon = {
                     IconButton(onClick = onDone) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
@@ -49,10 +49,34 @@ fun FeedingScreen(starterId: Long, onDone: () -> Unit) {
             modifier = Modifier.padding(padding).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            Text(
-                "Pre-filled from last time — usually you just hit Save.",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            if (!state.editing) {
+                Text(
+                    "Pre-filled from last time — usually you just hit Save.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            Text("When?", style = MaterialTheme.typography.titleSmall)
+            androidx.compose.foundation.layout.Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                listOf(0 to "Just now", 1 to "1h ago", 3 to "3h ago").forEach { (hours, label) ->
+                    androidx.compose.material3.FilterChip(
+                        selected = state.hoursAgo == hours,
+                        onClick = { viewModel.setHoursAgo(hours) },
+                        label = { Text(label) },
+                    )
+                }
+            }
+            OutlinedTextField(
+                value = when {
+                    state.hoursAgo != null && state.hoursAgo !in listOf(0, 1, 3) -> state.hoursAgo.toString()
+                    else -> ""
+                },
+                onValueChange = { it.toIntOrNull()?.let(viewModel::setHoursAgo) },
+                label = { Text("Custom (hours ago)") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
             )
             OutlinedTextField(
                 value = state.ratio,
@@ -69,7 +93,7 @@ fun FeedingScreen(starterId: Long, onDone: () -> Unit) {
                 modifier = Modifier.fillMaxWidth(),
             )
             Button(onClick = viewModel::save, modifier = Modifier.fillMaxWidth()) {
-                Text("Save feeding")
+                Text(if (state.editing) "Save changes" else "Save feeding")
             }
         }
     }

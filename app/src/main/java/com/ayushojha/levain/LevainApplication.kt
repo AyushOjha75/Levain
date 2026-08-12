@@ -19,6 +19,10 @@ class AppContainer(context: Context) {
     private val presenter = DueNotificationPresenter(context)
     private val coordinator = ReminderCoordinator(database.levainDao(), scheduler, presenter)
     val repository = LevainRepository(database.levainDao(), coordinator, clock)
+    val backupManager = com.ayushojha.levain.data.BackupManager(
+        database,
+        java.io.File(context.filesDir, "photos"),
+    )
 }
 
 class LevainApplication : Application() {

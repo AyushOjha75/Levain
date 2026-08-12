@@ -38,6 +38,12 @@ interface LevainDao {
     @Insert
     suspend fun insertFeeding(feeding: Feeding): Long
 
+    @Update
+    suspend fun updateFeeding(feeding: Feeding)
+
+    @Query("SELECT * FROM feeding WHERE id = :id")
+    suspend fun getFeeding(id: Long): Feeding?
+
     @Delete
     suspend fun deleteFeeding(feeding: Feeding)
 
@@ -85,4 +91,18 @@ interface LevainDao {
 
     @Query("SELECT * FROM bake WHERE starterId = :starterId ORDER BY timestampEpochMs DESC")
     fun observeBakes(starterId: Long): Flow<List<Bake>>
+
+    // --- Backup (full-table access + wipe for import) ---
+
+    @Query("SELECT * FROM feeding")
+    suspend fun getAllFeedings(): List<Feeding>
+
+    @Query("SELECT * FROM health_observation")
+    suspend fun getAllObservations(): List<HealthObservation>
+
+    @Query("SELECT * FROM bake")
+    suspend fun getAllBakes(): List<Bake>
+
+    @Query("DELETE FROM starter")
+    suspend fun clearStarters()
 }

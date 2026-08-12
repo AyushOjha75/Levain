@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-/** The detail screen's header: the Starter itself, plus program graduation. */
+/** The detail screen's header: the Starter itself, insights, and program graduation. */
 class StarterHeaderViewModel(
     private val repository: LevainRepository,
     starterId: Long,
@@ -17,6 +17,14 @@ class StarterHeaderViewModel(
 
     val starter: StateFlow<Starter?> = repository.observeStarter(starterId)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
+    val insights: StateFlow<com.ayushojha.levain.domain.Insights?> = kotlinx.coroutines.flow.combine(
+        repository.observeFeedings(starterId),
+        repository.observeObservations(starterId),
+        repository.observeBakes(starterId),
+    ) { feedings, observations, bakes ->
+        com.ayushojha.levain.domain.InsightsCalculator.insights(feedings, observations, bakes)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     /** Day 7 is done — the program flag comes off, the starter lives on. */
     fun graduate() {

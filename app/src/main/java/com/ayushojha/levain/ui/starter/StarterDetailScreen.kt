@@ -1,6 +1,9 @@
 package com.ayushojha.levain.ui.starter
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -24,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -42,6 +46,7 @@ fun StarterDetailScreen(
     onBack: () -> Unit,
     onEdit: () -> Unit,
     onLogFeeding: () -> Unit,
+    onEditFeeding: (Long) -> Unit,
     onLogObservation: () -> Unit,
     onLogBake: () -> Unit,
 ) {
@@ -54,6 +59,10 @@ fun StarterDetailScreen(
     val clock = androidx.compose.ui.platform.LocalContext.current.appContainer.clock
     val timeline by timelineViewModel.uiState.collectAsStateWithLifecycle()
     val starter by headerViewModel.starter.collectAsStateWithLifecycle()
+    val insights by headerViewModel.insights.collectAsStateWithLifecycle()
+    var viewedPhoto by androidx.compose.runtime.saveable.rememberSaveable {
+        androidx.compose.runtime.mutableStateOf<String?>(null)
+    }
 
     Scaffold(
         topBar = {
@@ -99,8 +108,67 @@ fun StarterDetailScreen(
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
+                insights?.let { item(key = "insights") { InsightsCard(it) } }
                 items(timeline.events, key = { "${it::class.simpleName}-${it.timestampEpochMs}-${it.hashCode()}" }) { event ->
-                    TimelineEventCard(event = event, onDelete = { timelineViewModel.delete(event) })
+                    TimelineEventCard(
+                        event = event,
+                        onDelete = { timelineViewModel.delete(event) },
+                        onEditFeeding = onEditFeeding,
+                        onViewPhoto = { viewedPhoto = it },
+                    )
+                }
+            }
+        }
+    }
+
+    viewedPhoto?.let { path ->
+        androidx.compose.ui.window.Dialog(onDismissRequest = { viewedPhoto = null }) {
+            val photoStore = androidx.compose.ui.platform.LocalContext.current.appContainer.photoStore
+            coil.compose.AsyncImage(
+                model = photoStore.fileFor(path),
+                contentDescription = "Photo",
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+    }
+}
+
+@Composable
+private fun InsightsCard(insights: com.ayushojha.levain.domain.Insights) {
+    Card(Modifier.fillMaxWidth()) {
+        Column(Modifier.padding(16.dp)) {
+            Text("Insights", style = MaterialTheme.typography.titleMedium)
+            val lines = buildList {
+                insights.avgGapHours?.let { add("Fed every ~${it}h on average") }
+                insights.onTimePercent?.let { add("$it% of recent feedings on time") }
+                insights.riseTrend?.let {
+                    add(
+                        when (it) {
+                            com.ayushojha.levain.domain.RiseTrend.IMPROVING -> "Rise trend: improving ↗"
+                            com.ayushojha.levain.domain.RiseTrend.STEADY -> "Rise trend: steady →"
+                            com.ayushojha.levain.domain.RiseTrend.DECLINING -> "Rise trend: declining ↘ — see the Starter doctor"
+                        }
+                    )
+                }
+                if (insights.bakeCount > 0) {
+                    add("${insights.bakeCount} bakes, averaging ${"%.1f".format(insights.avgBakeRating)}★")
+                }
+            }
+            if (lines.isEmpty()) {
+                Text(
+                    "Log feedings and observations and this starter's story shows up here.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 4.dp),
+                )
+            } else {
+                lines.forEach {
+                    Text(
+                        it,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = 4.dp),
+                    )
                 }
             }
         }
@@ -108,12 +176,35 @@ fun StarterDetailScreen(
 }
 
 @Composable
-private fun TimelineEventCard(event: TimelineEvent, onDelete: () -> Unit) {
+private fun TimelineEventCard(
+    event: TimelineEvent,
+    onDelete: () -> Unit,
+    onEditFeeding: (Long) -> Unit,
+    onViewPhoto: (String) -> Unit,
+) {
+    val photoPath = when (event) {
+        is TimelineEvent.ObservationEvent -> event.observation.photoPath
+        is TimelineEvent.BakeEvent -> event.bake.photoPath
+        else -> null
+    }
     Card {
         Row(
             Modifier.fillMaxWidth().padding(start = 16.dp, top = 12.dp, bottom = 12.dp, end = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            photoPath?.let { path ->
+                val photoStore = androidx.compose.ui.platform.LocalContext.current.appContainer.photoStore
+                coil.compose.AsyncImage(
+                    model = photoStore.fileFor(path),
+                    contentDescription = "Photo",
+                    contentScale = androidx.compose.ui.layout.ContentScale.Crop,
+                    modifier = Modifier
+                        .padding(end = 12.dp)
+                        .size(56.dp)
+                        .clip(MaterialTheme.shapes.small)
+                        .clickable { onViewPhoto(path) },
+                )
+            }
             Column(Modifier.weight(1f)) {
                 val (title, detail) = when (event) {
                     is TimelineEvent.FeedingEvent ->
@@ -136,6 +227,15 @@ private fun TimelineEventCard(event: TimelineEvent, onDelete: () -> Unit) {
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
+            }
+            if (event is TimelineEvent.FeedingEvent) {
+                IconButton(onClick = { onEditFeeding(event.feeding.id) }) {
+                    Icon(
+                        Icons.Filled.Edit,
+                        contentDescription = "Edit feeding",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
             }
             IconButton(onClick = onDelete) {
                 Icon(

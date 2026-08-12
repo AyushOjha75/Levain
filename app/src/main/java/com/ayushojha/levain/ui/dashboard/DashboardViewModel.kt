@@ -32,6 +32,8 @@ data class StarterCard(
 data class DashboardUiState(
     val cards: List<StarterCard> = emptyList(),
     val factOfTheDay: String = "",
+    /** False until the first database emission — distinguishes "loading" from "no starters". */
+    val loaded: Boolean = false,
 ) {
     /** The first uncelebrated milestone of the day, surfaced as a banner. */
     val milestoneBanner: String? get() = cards.firstNotNullOfOrNull { it.vitals.milestoneToday }
@@ -61,6 +63,7 @@ class DashboardViewModel(
         val feedingsByStarter = allFeedings.groupBy { it.starterId }
         val observationByStarter = lastObservations.associateBy { it.starterId }
         DashboardUiState(
+            loaded = true,
             // Local calendar day, refreshed by the ticker — rolls over at the
             // user's midnight, not UTC's.
             factOfTheDay = com.ayushojha.levain.domain.Tips.factOfTheDay(

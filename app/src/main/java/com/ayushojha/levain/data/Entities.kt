@@ -51,6 +51,12 @@ data class Feeding(
     /** starter:flour:water, e.g. "1:5:5". */
     val ratio: String,
     val flourType: String,
+    /**
+     * The feeding interval (hours) in force when this feeding was logged.
+     * Streaks judge each historical gap against its own era, so moving a
+     * starter between counter and fridge never rewrites its history.
+     */
+    val intervalHoursAtFeeding: Int? = null,
 )
 
 @Entity(

@@ -16,11 +16,11 @@ data class Vitals(
 
 /**
  * Streaks and age, derived from the Timeline — never stored. On-time means the
- * fed timestamp (not log time) is within the interval since the previous
- * feeding, measured against the starter's current-state interval. Feeding
- * history doesn't record past lifecycle states, so a DORMANT starter's streak
- * is judged against its dormant interval — feeding a fridge starter weekly
- * keeps the streak alive rather than breaking it ("pauses, not breaks").
+ * fed timestamp (not log time — back-filling preserves it) is within the
+ * interval since the previous feeding, judged against the interval each
+ * feeding recorded when it was logged ([Feeding.intervalHoursAtFeeding]).
+ * Dormant eras are judged by their dormant interval even after the starter
+ * returns to the counter — "pauses, not breaks", per the glossary.
  */
 object StreakCalculator {
 
@@ -40,20 +40,35 @@ object StreakCalculator {
     }
 
     private fun streak(starter: Starter, feedings: List<Feeding>, now: Instant): Int {
-        val interval = DueCalculator.intervalFor(starter) ?: return 0
+        val currentInterval = DueCalculator.intervalFor(starter) ?: return 0
         val ordered = feedings.sortedBy { it.timestampEpochMs }
         if (ordered.isEmpty()) return 0
 
         // A currently-overdue starter has no live streak.
         val lastFed = Instant.ofEpochMilli(ordered.last().timestampEpochMs)
-        if (Duration.between(lastFed, now) > interval.plus(DueCalculator.OVERDUE_THRESHOLD)) return 0
+        if (Duration.between(lastFed, now) > currentInterval.plus(DueCalculator.OVERDUE_THRESHOLD)) return 0
 
         var run = 1 // the first feeding of any run is on time by definition
         for (i in 1 until ordered.size) {
             val gap = Duration.ofMillis(ordered[i].timestampEpochMs - ordered[i - 1].timestampEpochMs)
-            run = if (gap <= interval.plus(DueCalculator.OVERDUE_THRESHOLD)) run + 1 else 1
+            run = if (gap <= expectedFor(ordered[i - 1], ordered[i], currentInterval)) run + 1 else 1
         }
         return run
+    }
+
+    /**
+     * The expectation for a gap. Lifecycle state can change mid-gap (fed →
+     * moved to fridge, or taken out → fed), so a gap is on time if it meets
+     * EITHER endpoint's recorded interval — transitions pause streaks, never
+     * break them. Pre-v3 rows have no stamp and fall back to the current interval.
+     */
+    internal fun expectedFor(previous: Feeding, current: Feeding, fallback: Duration): Duration {
+        val stamps = listOfNotNull(
+            previous.intervalHoursAtFeeding?.let { Duration.ofHours(it.toLong()) },
+            current.intervalHoursAtFeeding?.let { Duration.ofHours(it.toLong()) },
+        )
+        val expected = stamps.maxOrNull() ?: fallback
+        return expected.plus(DueCalculator.OVERDUE_THRESHOLD)
     }
 
     private fun milestone(name: String, ageDays: Long): String? {

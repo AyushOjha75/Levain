@@ -12,8 +12,8 @@ android {
         applicationId = "com.ayushojha.levain"
         minSdk = 26
         targetSdk = 34
-        versionCode = 2
-        versionName = "0.2.0"
+        versionCode = 3
+        versionName = "0.3.0"
     }
 
     // CI provides the release keystore via env; local release builds fall back
@@ -88,6 +88,8 @@ dependencies {
     // Lifecycle
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
+
+    implementation(libs.coil.compose)
 
     // Widget
     implementation(libs.androidx.glance.appwidget)

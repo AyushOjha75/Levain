@@ -9,7 +9,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Database(
     entities = [Starter::class, Feeding::class, HealthObservation::class, Bake::class],
-    version = 2,
+    version = 3,
     exportSchema = false,
 )
 abstract class LevainDatabase : RoomDatabase() {
@@ -23,9 +23,15 @@ abstract class LevainDatabase : RoomDatabase() {
             }
         }
 
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE feeding ADD COLUMN intervalHoursAtFeeding INTEGER")
+            }
+        }
+
         fun build(context: Context): LevainDatabase =
             Room.databaseBuilder(context, LevainDatabase::class.java, "levain.db")
-                .addMigrations(MIGRATION_1_2)
+                .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
                 .build()
     }
 }

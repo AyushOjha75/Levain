@@ -85,6 +85,17 @@ fun BakeScreen(starterId: Long, onDone: () -> Unit) {
                 modifier = Modifier.fillMaxWidth(),
             )
 
+            Text("When was it baked?", style = MaterialTheme.typography.titleSmall)
+            Row(horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp)) {
+                listOf(0 to "Today", 1 to "Yesterday", 2 to "2 days ago").forEach { (days, label) ->
+                    androidx.compose.material3.FilterChip(
+                        selected = state.daysAgo == days,
+                        onClick = { viewModel.setDaysAgo(days) },
+                        label = { Text(label) },
+                    )
+                }
+            }
+
             Text("How did the bread turn out?", style = MaterialTheme.typography.titleSmall)
             Row {
                 (1..5).forEach { star ->

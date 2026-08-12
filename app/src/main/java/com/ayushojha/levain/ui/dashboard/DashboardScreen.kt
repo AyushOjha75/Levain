@@ -16,6 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.HealthAndSafety
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Card
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -54,9 +55,23 @@ fun DashboardScreen(
     onOpenStarter: (Long) -> Unit,
     onOpenTools: () -> Unit,
     onOpenTroubleshoot: () -> Unit,
+    onOpenSettings: () -> Unit,
+    onFirstRun: () -> Unit,
 ) {
     val viewModel = containerViewModel { DashboardViewModel(it.repository, it.clock) }
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+
+    // Fresh install: no starters and the wizard never shown → route straight there.
+    val context = LocalContext.current
+    androidx.compose.runtime.LaunchedEffect(state.loaded) {
+        if (state.loaded && state.cards.isEmpty()) {
+            val prefs = context.getSharedPreferences("levain", android.content.Context.MODE_PRIVATE)
+            if (!prefs.getBoolean("wizard_shown", false)) {
+                prefs.edit().putBoolean("wizard_shown", true).apply()
+                onFirstRun()
+            }
+        }
+    }
     var celebratedMilestone by androidx.compose.runtime.saveable.rememberSaveable {
         mutableStateOf<String?>(null)
     }
@@ -71,6 +86,9 @@ fun DashboardScreen(
                     }
                     IconButton(onClick = onOpenTroubleshoot) {
                         Icon(Icons.Filled.HealthAndSafety, contentDescription = "Starter doctor")
+                    }
+                    IconButton(onClick = onOpenSettings) {
+                        Icon(Icons.Filled.Settings, contentDescription = "Backup")
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
