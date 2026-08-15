@@ -118,6 +118,7 @@ fun StarterDetailScreen(
                     ProgramCard(
                         programStartedAt = Instant.ofEpochMilli(startedAt),
                         now = clock.instant(),
+                        zone = clock.zone,
                         onGraduate = headerViewModel::graduate,
                     )
                 }
@@ -244,9 +245,14 @@ private fun InsightsCard(insights: Insights) {
 }
 
 @Composable
-private fun ProgramCard(programStartedAt: Instant, now: Instant, onGraduate: () -> Unit) {
-    val day = StarterProgram.currentDay(programStartedAt, now)
-    val complete = StarterProgram.isComplete(programStartedAt, now)
+private fun ProgramCard(
+    programStartedAt: Instant,
+    now: Instant,
+    zone: java.time.ZoneId,
+    onGraduate: () -> Unit,
+) {
+    val day = StarterProgram.currentDay(programStartedAt, now, zone)
+    val complete = StarterProgram.isComplete(programStartedAt, now, zone)
     val content = StarterProgram.DAYS[day - 1]
 
     LevainCard(tone = MaterialTheme.colorScheme.secondaryContainer, modifier = Modifier.fillMaxWidth()) {

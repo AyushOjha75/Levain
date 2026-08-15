@@ -76,13 +76,13 @@ class WizardAndGadgetsTest {
         val starter = app.repository.observeStarters().first().single()
         assertNotNull(starter.programStartedAtEpochMs)
         val startedAt = java.time.Instant.ofEpochMilli(starter.programStartedAtEpochMs!!)
-        assertEquals(1, StarterProgram.currentDay(startedAt, app.clock.instant()))
+        assertEquals(1, StarterProgram.currentDay(startedAt, app.clock.instant(), app.clock.zone))
 
         app.clock.advanceBy(Duration.ofDays(3))
-        assertEquals(4, StarterProgram.currentDay(startedAt, app.clock.instant()))
+        assertEquals(4, StarterProgram.currentDay(startedAt, app.clock.instant(), app.clock.zone))
 
         app.clock.advanceBy(Duration.ofDays(10))
-        assertTrue(StarterProgram.isComplete(startedAt, app.clock.instant()))
+        assertTrue(StarterProgram.isComplete(startedAt, app.clock.instant(), app.clock.zone))
     }
 
     @Test

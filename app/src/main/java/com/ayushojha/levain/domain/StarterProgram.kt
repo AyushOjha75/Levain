@@ -1,7 +1,8 @@
 package com.ayushojha.levain.domain
 
-import java.time.Duration
 import java.time.Instant
+import java.time.ZoneId
+import java.time.temporal.ChronoUnit
 
 data class ProgramDay(
     val day: Int,
@@ -28,12 +29,25 @@ object StarterProgram {
 
     const val LENGTH_DAYS = 7
 
-    /** 1-based current day, capped at LENGTH_DAYS; the cap keeps day-7 advice up until graduation. */
-    fun currentDay(programStartedAt: Instant, now: Instant): Int {
-        val elapsed = Duration.between(programStartedAt, now).toDays().toInt() + 1
-        return elapsed.coerceIn(1, LENGTH_DAYS)
-    }
+    /**
+     * Program days are **local calendar days**, not 24-hour blocks from the
+     * start instant: a baker asks "what do I do today", so the day has to turn
+     * over at their midnight. Counting elapsed hours instead would flip to
+     * Day 2 in the middle of the afternoon, and lose or gain a day whenever
+     * the clocks change.
+     *
+     * 1-based and capped at [LENGTH_DAYS] — the cap keeps day-seven advice on
+     * screen until the baker graduates the starter.
+     */
+    fun currentDay(programStartedAt: Instant, now: Instant, zone: ZoneId): Int =
+        (elapsedDays(programStartedAt, now, zone) + 1).coerceIn(1, LENGTH_DAYS)
 
-    fun isComplete(programStartedAt: Instant, now: Instant): Boolean =
-        Duration.between(programStartedAt, now).toDays().toInt() + 1 > LENGTH_DAYS
+    fun isComplete(programStartedAt: Instant, now: Instant, zone: ZoneId): Boolean =
+        elapsedDays(programStartedAt, now, zone) + 1 > LENGTH_DAYS
+
+    private fun elapsedDays(programStartedAt: Instant, now: Instant, zone: ZoneId): Int =
+        ChronoUnit.DAYS.between(
+            programStartedAt.atZone(zone).toLocalDate(),
+            now.atZone(zone).toLocalDate(),
+        ).toInt()
 }
