@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Levain — a baking assistant for sourdough and focaccia</title>
+<meta name="description" content="Levain keeps your sourdough starters alive and guides you through a bake. Local-first, no accounts, open source.">
+<meta property="og:title" content="Levain">
+<meta property="og:description" content="A baking assistant for sourdough and focaccia. Local-first, no accounts.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'><rect width='48' height='48' rx='10' fill='%234A2C17'/><path d='M9 30c0-8.5 6.7-14 15-14s15 5.5 15 14c0 3.6-2.6 6-6.4 6H15.4C11.6 36 9 33.6 9 30Z' fill='%23F2E7D6'/></svg>">
+<style>
+  :root {
+    --crumb: #F5EADB;
+    --crumb-raised: #FDF7EC;
+    --crumb-shade: #E9DCC8;
+    --crust: #4A2C17;
+    --ink: #3A2413;
+    --muted: #8A7A66;
+    --outline: #D9C8AF;
+    --olive: #6B8E4E;
+    --ember: #C8622E;
+    --serif: Georgia, "Iowan Old Style", "Palatino Linotype", Palatino, serif;
+    --sans: "Segoe UI", system-ui, -apple-system, sans-serif;
+    --mono: ui-monospace, "Cascadia Mono", "SF Mono", Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --crumb: #17120D;
+      --crumb-raised: #201A13;
+      --crumb-shade: #2E2419;
+      --crust: #E0B584;
+      --ink: #EFE3D2;
+      --muted: #B0A08A;
+      --outline: #4A3B2A;
+      --olive: #9CBB7E;
+      --ember: #E4844F;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--crumb);
+    color: var(--ink);
+    font-family: var(--sans);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 940px; margin: 0 auto; padding: 0 24px; }
+  a { color: inherit; }
+
+  /* hero */
+  header { padding: 88px 0 64px; }
+  .mark { display: flex; align-items: center; gap: 14px; margin-bottom: 34px; }
+  .mark__tile { width: 54px; height: 54px; border-radius: 15px; background: #4A2C17; display: grid; place-items: center; flex: none; }
+  .mark__name { font-family: var(--serif); font-size: 25px; letter-spacing: -.01em; }
+  h1 {
+    font-family: var(--serif); font-weight: 400;
+    font-size: clamp(38px, 6.2vw, 66px); line-height: 1.04;
+    margin: 0 0 22px; letter-spacing: -.015em; text-wrap: balance;
+  }
+  .lede { font-size: clamp(17px, 2.2vw, 20px); max-width: 40ch; color: var(--muted); margin: 0 0 34px; }
+  .cta-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  .btn {
+    display: inline-block; text-decoration: none; font-weight: 600; font-size: 15px;
+    padding: 14px 26px; border-radius: 24px;
+    background: var(--crust); color: var(--crumb);
+    border: 1px solid var(--crust);
+  }
+  .btn--ghost { background: transparent; color: var(--ink); border-color: var(--outline); }
+  .btn:focus-visible, a:focus-visible { outline: 2px solid var(--ember); outline-offset: 3px; }
+  .fineprint { font-size: 13px; color: var(--muted); margin-top: 14px; }
+
+  /* sections */
+  section { padding: 56px 0; border-top: 1px solid var(--outline); }
+  .eyebrow {
+    font-size: 11px; letter-spacing: .18em; text-transform: uppercase;
+    color: var(--muted); margin: 0 0 14px;
+  }
+  h2 { font-family: var(--serif); font-weight: 400; font-size: clamp(26px, 3.4vw, 34px); margin: 0 0 26px; letter-spacing: -.01em; }
+  h3 { font-family: var(--serif); font-weight: 400; font-size: 21px; margin: 0 0 6px; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(248px, 1fr)); gap: 18px; }
+  .card {
+    background: var(--crumb-raised); border: 1px solid var(--outline);
+    border-radius: 18px; padding: 22px;
+  }
+  .card p { margin: 0; color: var(--muted); font-size: 14.5px; }
+
+  /* two registers strip */
+  .registers { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  @media (max-width: 680px) { .registers { grid-template-columns: 1fr; } }
+  .reg { border-radius: 18px; padding: 24px; border: 1px solid var(--outline); }
+  .reg--hearth { background: var(--crumb-raised); }
+  .reg--ember { background: #121110; border-color: #2C2926; color: #E6E1DA; }
+  .reg--ember .reg__label { color: #E8562A; }
+  .reg--ember p { color: #7A736B; }
+  .reg__label { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--ember); margin-bottom: 10px; }
+  .reg .num { font-family: var(--mono); font-size: 40px; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+  .reg p { font-size: 14px; margin: 10px 0 0; color: var(--muted); }
+
+  /* roadmap */
+  ol.road { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+  ol.road li {
+    display: flex; gap: 14px; align-items: baseline;
+    background: var(--crumb-raised); border: 1px solid var(--outline);
+    border-radius: 14px; padding: 16px 18px;
+  }
+  .tag {
+    font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase;
+    padding: 4px 10px; border-radius: 999px; flex: none; font-weight: 600;
+  }
+  .tag--done { background: var(--olive); color: #10200A; }
+  .tag--next { background: var(--ember); color: #2A0F03; }
+  .tag--soon { background: var(--crumb-shade); color: var(--muted); }
+
+  footer { padding: 46px 0 72px; color: var(--muted); font-size: 14px; border-top: 1px solid var(--outline); }
+  footer a { color: var(--ink); }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header>
+    <div class="mark">
+      <div class="mark__tile">
+        <svg width="34" height="34" viewBox="0 0 48 48" aria-hidden="true">
+          <path d="M9 30c0-8.5 6.7-14 15-14s15 5.5 15 14c0 3.6-2.6 6-6.4 6H15.4C11.6 36 9 33.6 9 30Z" fill="#F2E7D6"/>
+          <path d="M17 27c2.4-2.6 5-2.6 7 0M25 27c2.4-2.6 5-2.6 7 0" stroke="#C8622E" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+        </svg>
+      </div>
+      <span class="mark__name">Levain</span>
+    </div>
+
+    <h1>Keep a starter alive. Bake better bread.</h1>
+    <p class="lede">An Android app for sourdough and focaccia. Your cultures, their history, and the maths — all on your phone, none of it on anyone's server.</p>
+
+    <div class="cta-row">
+      <a class="btn" href="https://github.com/AyushOjha75/Levain/releases/latest">Download the latest APK</a>
+      <a class="btn btn--ghost" href="https://github.com/AyushOjha75/Levain">Source on GitHub</a>
+    </div>
+    <p class="fineprint">Android 8.0+. Sideloaded — not on the Play Store. No account, no network permission, no telemetry.</p>
+  </header>
+
+  <section>
+    <p class="eyebrow">What it does today</p>
+    <h2>It remembers, so you don't have to.</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>Starters with faces</h3>
+        <p>Every culture gets a jar avatar whose mood follows its real health — sleepy when sluggish, hungry when overdue.</p>
+      </div>
+      <div class="card">
+        <h3>Two-tap feeding</h3>
+        <p>Pre-filled from last time, with chips for back-filling the feed you forgot to log this morning.</p>
+      </div>
+      <div class="card">
+        <h3>Honest streaks</h3>
+        <p>Each feeding records the interval in force when it happened, so moving a jar to the fridge never rewrites its history.</p>
+      </div>
+      <div class="card">
+        <h3>Reminders that don't nag</h3>
+        <p>One coalesced notification when starters come due. Fired once — the dashboard is the standing signal.</p>
+      </div>
+      <div class="card">
+        <h3>Baker's maths</h3>
+        <p>Levain build and baker's percentage calculators, plus a home-screen widget showing who needs feeding.</p>
+      </div>
+      <div class="card">
+        <h3>Your data, exportable</h3>
+        <p>One zip with everything including photos. Import restores it atomically — a failed restore leaves what you had.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="eyebrow">Design</p>
+    <h2>Two moods, two registers.</h2>
+    <div class="registers">
+      <div class="reg reg--hearth">
+        <p class="reg__label">Hearth · the shell</p>
+        <div style="font-family:var(--serif); font-size:26px;">Rye is thriving</div>
+        <p>Slow, warm, affectionate. Starter care is a relationship measured in months, and the app treats it that way.</p>
+      </div>
+      <div class="reg reg--ember">
+        <p class="reg__label">Ember · the live bake</p>
+        <div class="num">28:14</div>
+        <p>Dark, high-contrast, numerals first. Built to be read at arm's length with floury hands at six in the morning.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="eyebrow">Where it's going</p>
+    <h2>Toward a guided bake.</h2>
+    <ol class="road">
+      <li><span class="tag tag--done">Shipped</span><span><strong>Starters, feedings, observations, reminders, insights and backup.</strong> The maintenance loop, done properly.</span></li>
+      <li><span class="tag tag--done">Shipped</span><span><strong>Identity and design system.</strong> A real launcher icon, and one palette, type scale and component set across the app.</span></li>
+      <li><span class="tag tag--done">Shipped</span><span><strong>The bake-centric data model.</strong> Recipes, snapshotted steps, and bakes that can be in progress — migrated without losing a row.</span></li>
+      <li><span class="tag tag--next">Next</span><span><strong>Recipes as content.</strong> Sourdough and focaccia as hand-readable data, so adding a bread is never a code change.</span></li>
+      <li><span class="tag tag--soon">Then</span><span><strong>The guided bake.</strong> Levain build to oven, with timers for what a clock can measure and cues for what only you can judge.</span></li>
+    </ol>
+  </section>
+
+  <footer>
+    <p>Built in the open at <a href="https://github.com/AyushOjha75/Levain">github.com/AyushOjha75/Levain</a>. Kotlin, Jetpack Compose and Room; no backend anywhere.</p>
+  </footer>
+
+</div>
+</body>
+</html>
