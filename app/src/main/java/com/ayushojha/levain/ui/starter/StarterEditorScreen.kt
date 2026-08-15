@@ -19,6 +19,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import com.ayushojha.levain.ui.components.LevainTopBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -40,7 +41,7 @@ fun StarterEditorScreen(starterId: Long?, onDone: () -> Unit) {
 
     Scaffold(
         topBar = {
-            TopAppBar(
+            LevainTopBar(
                 title = { Text(if (starterId == null) "New starter" else "Edit starter") },
                 navigationIcon = {
                     IconButton(onClick = onDone) {
@@ -49,6 +50,7 @@ fun StarterEditorScreen(starterId: Long?, onDone: () -> Unit) {
                 },
             )
         },
+        containerColor = MaterialTheme.colorScheme.background,
     ) { padding ->
         Column(
             modifier = Modifier

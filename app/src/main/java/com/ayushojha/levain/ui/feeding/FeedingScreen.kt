@@ -15,6 +15,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import com.ayushojha.levain.ui.components.LevainTopBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -35,7 +36,7 @@ fun FeedingScreen(starterId: Long, feedingId: Long? = null, onDone: () -> Unit) 
 
     Scaffold(
         topBar = {
-            TopAppBar(
+            LevainTopBar(
                 title = { Text(if (state.editing) "Edit feeding" else "Log feeding") },
                 navigationIcon = {
                     IconButton(onClick = onDone) {
@@ -44,6 +45,7 @@ fun FeedingScreen(starterId: Long, feedingId: Long? = null, onDone: () -> Unit) 
                 },
             )
         },
+        containerColor = MaterialTheme.colorScheme.background,
     ) { padding ->
         Column(
             modifier = Modifier.padding(padding).padding(16.dp),

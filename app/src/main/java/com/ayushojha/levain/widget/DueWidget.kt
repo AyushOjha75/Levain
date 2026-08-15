@@ -2,6 +2,7 @@ package com.ayushojha.levain.widget
 
 import android.content.Context
 import androidx.compose.ui.graphics.Color
+import com.ayushojha.levain.ui.theme.Palette
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.glance.GlanceId
@@ -47,7 +48,7 @@ class DueWidget : GlanceAppWidget() {
                 Column(
                     modifier = GlanceModifier
                         .fillMaxWidth()
-                        .background(Color(0xFFFDF6EC))
+                        .background(Palette.Crumb)
                         .padding(12.dp),
                 ) {
                     Text(
@@ -55,20 +56,20 @@ class DueWidget : GlanceAppWidget() {
                         style = TextStyle(
                             fontWeight = FontWeight.Bold,
                             fontSize = 14.sp,
-                            color = ColorProvider(Color(0xFF5C3A1E)),
+                            color = ColorProvider(Palette.CrustInk),
                         ),
                     )
                     if (lines.isEmpty()) {
                         Text(
-                            "Everyone's fed 🍞",
-                            style = TextStyle(fontSize = 13.sp, color = ColorProvider(Color(0xFF6E6255))),
+                            "Everyone's fed",
+                            style = TextStyle(fontSize = 13.sp, color = ColorProvider(Palette.Muted)),
                             modifier = GlanceModifier.padding(top = 4.dp),
                         )
                     } else {
                         lines.forEach { line ->
                             Text(
                                 line,
-                                style = TextStyle(fontSize = 13.sp, color = ColorProvider(Color(0xFFB3492B))),
+                                style = TextStyle(fontSize = 13.sp, color = ColorProvider(Palette.Rust)),
                                 modifier = GlanceModifier.padding(top = 4.dp),
                             )
                         }

@@ -26,6 +26,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import com.ayushojha.levain.ui.components.LevainTopBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -50,7 +51,7 @@ fun StarterWizardScreen(onDone: (Long?) -> Unit) {
 
     Scaffold(
         topBar = {
-            TopAppBar(
+            LevainTopBar(
                 title = {},
                 navigationIcon = {
                     IconButton(onClick = { if (state.step == WizardStep.CHOICE) onDone(null) else viewModel.back() }) {
@@ -59,6 +60,7 @@ fun StarterWizardScreen(onDone: (Long?) -> Unit) {
                 },
             )
         },
+        containerColor = MaterialTheme.colorScheme.background,
     ) { padding ->
         AnimatedContent(targetState = state.step, label = "wizard-step") { step ->
             Column(

@@ -23,6 +23,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import com.ayushojha.levain.ui.components.LevainTopBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -42,7 +43,7 @@ fun TroubleshootingScreen(onBack: () -> Unit) {
 
     Scaffold(
         topBar = {
-            TopAppBar(
+            LevainTopBar(
                 title = { Text("Starter doctor") },
                 navigationIcon = {
                     IconButton(onClick = { if (state.canGoBack) viewModel.back() else onBack() }) {
@@ -51,6 +52,7 @@ fun TroubleshootingScreen(onBack: () -> Unit) {
                 },
             )
         },
+        containerColor = MaterialTheme.colorScheme.background,
     ) { padding ->
         AnimatedContent(targetState = state.node, label = "troubleshoot") { node ->
             Column(

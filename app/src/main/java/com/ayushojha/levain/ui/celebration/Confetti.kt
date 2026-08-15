@@ -16,13 +16,7 @@ import androidx.compose.ui.graphics.drawscope.rotate
 import kotlin.math.sin
 import kotlin.random.Random
 
-private val ConfettiColors = listOf(
-    Color(0xFF8B5E34), // crust
-    Color(0xFF6B8E4E), // sour green
-    Color(0xFFD9A876), // toasted
-    Color(0xFFB3492B), // rust
-    Color(0xFFF3E3CE), // crumb
-)
+private val ConfettiColors = com.ayushojha.levain.ui.theme.Palette.Confetti
 
 private class Particle(seed: Random) {
     val x = seed.nextFloat()

@@ -20,16 +20,19 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import com.ayushojha.levain.domain.Mood
+import com.ayushojha.levain.ui.theme.Palette
 
-private val JarGlass = Color(0xFFEDE3D4)
-private val JarGlassDark = Color(0xFF4A4238)
-private val DoughLight = Color(0xFFF6EBDD)
-private val DoughShade = Color(0xFFE3CDA8)
-private val DoughRetired = Color(0xFFCFC8BE)
-private val LidBrown = Color(0xFF8B5E34)
-private val LidRetired = Color(0xFF8E8579)
-private val FaceInk = Color(0xFF4A3624)
-private val CheekPink = Color(0x33D96A4A)
+// The jar's palette comes from the design system like everything else — the
+// Avatar is the Starter section's motif, not a private colour world.
+private val JarGlass = Palette.JarGlass
+private val JarGlassDark = Palette.JarGlassNight
+private val DoughLight = Palette.Dough
+private val DoughShade = Palette.DoughShade
+private val DoughRetired = Palette.DoughRetired
+private val LidBrown = Palette.Crust
+private val LidRetired = Palette.LidRetired
+private val FaceInk = Palette.FaceInk
+private val CheekPink = Palette.Cheek
 
 /**
  * The Starter's Avatar: a parametric jar character, drawn in code so moods,
