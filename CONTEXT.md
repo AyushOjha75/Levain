@@ -10,7 +10,13 @@ The reusable plan for one bread — bundled content that ships with the app, nev
 ### Bake
 One run of a Recipe, from the moment it starts to the loaf coming out — and afterwards, the record of that run. **The live session and the history entry are the same thing**, distinguished only by status: *planned*, *active*, *finished*, or *abandoned*. A Bake may also be logged directly as *finished* with no Steps, for bread baked away from the app.
 
-A Bake holds a **scale** (the multiple of the Recipe's reference batch it was baked at), its resolved quantities, its Steps, and its outcome.
+A Bake holds a **scale** (the multiple of the Recipe's reference batch it was baked at), its resolved quantities, its Steps, and its outcome. Its full set of statuses is *planned*, *active*, *held*, *finished*, *abandoned* — an abandoned Bake stays in history, because a failed bake is data.
+
+### Hold
+A deliberate pause on an active Bake — retarding overnight in the fridge, or simply stopping. Distinct from a Step running long: a Hold stops the timeline recalculating altogether, and resuming recomputes the remaining Steps from the moment of resume.
+
+### Projection
+The Bake's remaining timeline, including its projected out-of-the-oven time. It is derived from actual Step completion times and recalculates whenever one lands early or late — a projection the app maintains, never a contract it holds the baker to. Every automatic behaviour adjusts the Projection; every irreversible action belongs to the baker.
 
 ### Step
 One instruction within a Bake, **snapshotted from the Recipe when the Bake starts** — never read live from the Recipe, so updating bundled content can never rewrite a bake in progress or a bake in history. Repeats are expanded at snapshot: "four folds, thirty minutes apart" becomes four Steps, each with its own due time and its own completion time.
