@@ -315,7 +315,8 @@ private fun TimelineEventCard(
                     is TimelineEvent.ObservationEvent ->
                         "Observed: ${event.observation.riseRating.name.lowercase()}" to observationDetail(event.observation)
                     is TimelineEvent.BakeEvent ->
-                        "Baked ${"★".repeat(event.bake.outcomeRating)}" to (event.bake.levainNotes ?: event.bake.note ?: "")
+                        (event.bake.outcomeRating?.let { "Baked ${"★".repeat(it)}" } ?: "Bake in progress") to
+                            (event.bake.levainNotes ?: event.bake.note ?: "")
                 }
                 Text(title, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
                 if (detail.isNotEmpty()) {

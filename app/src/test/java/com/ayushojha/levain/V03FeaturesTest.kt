@@ -164,6 +164,39 @@ class V03FeaturesTest {
     }
 
     @Test
+    fun `an archive written by v0_3 still imports`() = runTest(mainDispatcherRule.dispatcher) {
+        val vm = SettingsViewModel(backupManager(), app.repository, mainDispatcherRule.dispatcher)
+
+        // Format 1: no bake status, no scale, starterId always present, rating required.
+        val out = ByteArrayOutputStream()
+        java.util.zip.ZipOutputStream(out).use { zip ->
+            zip.putNextEntry(java.util.zip.ZipEntry("data.json"))
+            zip.write(
+                """{"version":1,
+                   "starters":[{"id":1,"name":"Rye","state":"ACTIVE","activeIntervalHours":24,
+                                "dormantIntervalHours":168,"createdAtEpochMs":1000}],
+                   "feedings":[{"id":1,"starterId":1,"timestampEpochMs":2000,"ratio":"1:5:5","flourType":"Rye"}],
+                   "observations":[],
+                   "bakes":[{"id":1,"starterId":1,"timestampEpochMs":4000,"outcomeRating":5}]}""".toByteArray()
+            )
+            zip.closeEntry()
+        }
+
+        vm.import { ByteArrayInputStream(out.toByteArray()) }
+        advanceUntilIdle()
+        assertTrue(vm.uiState.value.lastResult!!.contains("✓"))
+
+        val starter = app.repository.observeStarters().first().single()
+        assertEquals("Rye", starter.name)
+        val bake = app.repository.observeBakes(starter.id).first().single()
+        // An old archive's bakes land as finished bakes at scale 1 — same rule
+        // the schema migration applies to old rows.
+        assertEquals(com.ayushojha.levain.data.BakeStatus.FINISHED, bake.status)
+        assertEquals(1.0, bake.scale, 0.0001)
+        assertEquals(5, bake.outcomeRating)
+    }
+
+    @Test
     fun `corrupt import rolls back and leaves current data intact`() = runTest(mainDispatcherRule.dispatcher) {
         val id = seedStarter("Survivor")
         val vm = SettingsViewModel(backupManager(), app.repository, mainDispatcherRule.dispatcher)
@@ -242,8 +275,8 @@ class V03FeaturesTest {
             HealthObservation(4, 1, base + 3, RiseRating.PEAKED),
         )
         val bakes = listOf(
-            Bake(1, 1, base, outcomeRating = 4),
-            Bake(2, 1, base, outcomeRating = 5),
+            Bake(id = 1, starterId = 1, timestampEpochMs = base, outcomeRating = 4),
+            Bake(id = 2, starterId = 1, timestampEpochMs = base, outcomeRating = 5),
         )
 
         val insights = InsightsCalculator.insights(feedings, observations, bakes)

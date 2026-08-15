@@ -81,24 +81,146 @@ data class HealthObservation(
     val note: String? = null,
 )
 
+enum class BakeStatus { PLANNED, ACTIVE, HELD, FINISHED, ABANDONED }
+
+enum class StepKind {
+    /** A real duration with a real timer. */
+    TIMED,
+
+    /** The baker decides, guided by an estimate and an observable cue. */
+    JUDGED,
+
+    /** Done the moment you do it. Never given a fake duration. */
+    ACTION,
+}
+
+/**
+ * One run of a Recipe — live while it runs, and the history entry afterwards.
+ * Status is the only thing that separates the two.
+ *
+ * `starterId` is nullable because yeasted breads have no Starter, and deleting
+ * a Starter orphans its Bakes (SET NULL) rather than erasing the loaves it made.
+ */
 @Entity(
     tableName = "bake",
     foreignKeys = [ForeignKey(
         entity = Starter::class,
         parentColumns = ["id"],
         childColumns = ["starterId"],
-        onDelete = ForeignKey.CASCADE,
+        onDelete = ForeignKey.SET_NULL,
     )],
     indices = [Index("starterId")],
 )
 data class Bake(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val starterId: Long,
+    val starterId: Long? = null,
+    /** Which Recipe this came from, purely as provenance — Steps are snapshotted. */
+    val recipeId: String? = null,
+    val recipeContentVersion: Int? = null,
+    val status: BakeStatus = BakeStatus.FINISHED,
+    /** Multiple of the Recipe's reference batch. */
+    val scale: Double = 1.0,
     val timestampEpochMs: Long,
-    /** Levain (bake build) folded into the Bake as notes — not a separate entity. */
+    val startedAtEpochMs: Long? = null,
+    /** Set while the Bake is HELD — a deliberate pause stops the Projection. */
+    val heldAtEpochMs: Long? = null,
+    /** Levain build notes, for bakes logged without a guided run. */
     val levainNotes: String? = null,
-    /** 1..5. */
-    val outcomeRating: Int,
+    /** 1..5, null until the bake is finished and rated. */
+    val outcomeRating: Int? = null,
     val photoPath: String? = null,
     val note: String? = null,
+)
+
+/** The reusable plan for one bread. Bundled content, parsed from assets. */
+@Entity(tableName = "recipe")
+data class Recipe(
+    /** Stable slug, e.g. "sourdough-country". */
+    @PrimaryKey val id: String,
+    val name: String,
+    val summary: String,
+    val breadType: String,
+    val requiresStarter: Boolean,
+    /** What the declared quantities make: "1 loaf", "one 9x13 pan". */
+    val referenceBatch: String,
+    val contentVersion: Int,
+)
+
+@Entity(
+    tableName = "recipe_ingredient",
+    foreignKeys = [ForeignKey(
+        entity = Recipe::class,
+        parentColumns = ["id"],
+        childColumns = ["recipeId"],
+        onDelete = ForeignKey.CASCADE,
+    )],
+    indices = [Index("recipeId")],
+)
+data class RecipeIngredient(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val recipeId: String,
+    val position: Int,
+    val name: String,
+    val grams: Double,
+    val bakersPercent: Double? = null,
+    /** Which part of the bake consumes it: levain, dough, topping. */
+    val phase: String,
+)
+
+/**
+ * A Step as the Recipe declares it — the compact form, where repeats are still
+ * a count. Expanded into [BakeStep]s when a Bake starts.
+ */
+@Entity(
+    tableName = "recipe_step",
+    foreignKeys = [ForeignKey(
+        entity = Recipe::class,
+        parentColumns = ["id"],
+        childColumns = ["recipeId"],
+        onDelete = ForeignKey.CASCADE,
+    )],
+    indices = [Index("recipeId")],
+)
+data class RecipeStepTemplate(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val recipeId: String,
+    val position: Int,
+    val title: String,
+    val instruction: String,
+    val kind: StepKind,
+    /** TIMED: the timer. JUDGED: the estimate. ACTION: null. */
+    val durationMinutes: Int? = null,
+    /** JUDGED only — what the baker looks for. */
+    val cue: String? = null,
+    val repeatCount: Int = 1,
+    val repeatEveryMinutes: Int? = null,
+    val phase: String,
+)
+
+/**
+ * A Step belonging to one Bake, snapshotted at start so revising bundled
+ * content can never rewrite a bake in progress or in history.
+ */
+@Entity(
+    tableName = "bake_step",
+    foreignKeys = [ForeignKey(
+        entity = Bake::class,
+        parentColumns = ["id"],
+        childColumns = ["bakeId"],
+        onDelete = ForeignKey.CASCADE,
+    )],
+    indices = [Index("bakeId")],
+)
+data class BakeStep(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val bakeId: Long,
+    val position: Int,
+    val title: String,
+    val instruction: String,
+    val kind: StepKind,
+    val cue: String? = null,
+    val plannedDurationMinutes: Int? = null,
+    /** The Projection: when this step comes due, recalculated as steps land. */
+    val dueAtEpochMs: Long? = null,
+    val completedAtEpochMs: Long? = null,
 )

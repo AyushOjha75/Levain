@@ -52,8 +52,11 @@ object InsightsCalculator {
             onTimePercent = onTimePercent,
             riseTrend = riseTrend,
             bakeCount = bakes.size,
-            avgBakeRating = bakes.takeIf { it.isNotEmpty() }
-                ?.let { list -> list.sumOf { it.outcomeRating }.toDouble() / list.size },
+            // Only rated bakes have an outcome to average — one in progress
+            // shouldn't drag the mean toward zero.
+            avgBakeRating = bakes.mapNotNull { it.outcomeRating }
+                .takeIf { it.isNotEmpty() }
+                ?.let { ratings -> ratings.sum().toDouble() / ratings.size },
         )
     }
 

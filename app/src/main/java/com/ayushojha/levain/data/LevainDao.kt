@@ -92,6 +92,50 @@ interface LevainDao {
     @Query("SELECT * FROM bake WHERE starterId = :starterId ORDER BY timestampEpochMs DESC")
     fun observeBakes(starterId: Long): Flow<List<Bake>>
 
+    // --- Recipes (bundled content, re-seeded from assets, never user data) ---
+
+    @Insert(onConflict = androidx.room.OnConflictStrategy.REPLACE)
+    suspend fun upsertRecipe(recipe: Recipe)
+
+    @Insert(onConflict = androidx.room.OnConflictStrategy.REPLACE)
+    suspend fun upsertIngredients(ingredients: List<RecipeIngredient>)
+
+    @Insert(onConflict = androidx.room.OnConflictStrategy.REPLACE)
+    suspend fun upsertStepTemplates(steps: List<RecipeStepTemplate>)
+
+    @Query("SELECT * FROM recipe ORDER BY name")
+    fun observeRecipes(): Flow<List<Recipe>>
+
+    @Query("SELECT * FROM recipe WHERE id = :id")
+    suspend fun getRecipe(id: String): Recipe?
+
+    @Query("SELECT * FROM recipe_ingredient WHERE recipeId = :recipeId ORDER BY position")
+    suspend fun getIngredients(recipeId: String): List<RecipeIngredient>
+
+    @Query("SELECT * FROM recipe_step WHERE recipeId = :recipeId ORDER BY position")
+    suspend fun getStepTemplates(recipeId: String): List<RecipeStepTemplate>
+
+    // --- Bake steps (snapshotted onto a Bake at start) ---
+
+    @Insert
+    suspend fun insertBakeSteps(steps: List<BakeStep>)
+
+    @Update
+    suspend fun updateBakeStep(step: BakeStep)
+
+    @Query("SELECT * FROM bake_step WHERE bakeId = :bakeId ORDER BY position")
+    fun observeBakeSteps(bakeId: Long): Flow<List<BakeStep>>
+
+    @Query("SELECT * FROM bake_step WHERE bakeId = :bakeId ORDER BY position")
+    suspend fun getBakeSteps(bakeId: Long): List<BakeStep>
+
+    @Update
+    suspend fun updateBake(bake: Bake)
+
+    /** At most one Bake is live at a time; the app opens straight into it. */
+    @Query("SELECT * FROM bake WHERE status IN ('ACTIVE','HELD') ORDER BY startedAtEpochMs DESC LIMIT 1")
+    fun observeActiveBake(): Flow<Bake?>
+
     // --- Backup (full-table access + wipe for import) ---
 
     @Query("SELECT * FROM feeding")
@@ -103,6 +147,16 @@ interface LevainDao {
     @Query("SELECT * FROM bake")
     suspend fun getAllBakes(): List<Bake>
 
+    @Query("SELECT * FROM bake_step")
+    suspend fun getAllBakeSteps(): List<BakeStep>
+
     @Query("DELETE FROM starter")
     suspend fun clearStarters()
+
+    /**
+     * Bakes no longer cascade from Starters (deleting a Starter orphans them),
+     * so a full wipe has to clear them explicitly. Their steps cascade.
+     */
+    @Query("DELETE FROM bake")
+    suspend fun clearBakes()
 }

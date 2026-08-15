@@ -23,7 +23,12 @@ class BackupManager(
     private val dao: LevainDao get() = db.levainDao()
 
     companion object {
-        const val FORMAT_VERSION = 1
+        /**
+         * 1 — the v0.3 shape. 2 — adds bake status/scale/provenance and
+         * snapshotted bake steps. Archives at 1 still import; Recipes are
+         * never in a backup because they are bundled content, not user data.
+         */
+        const val FORMAT_VERSION = 2
     }
 
     suspend fun export(out: OutputStream) {
@@ -113,19 +118,40 @@ class BackupManager(
         put("bakes", JSONArray().apply {
             dao.getAllBakes().forEach { b ->
                 put(JSONObject().apply {
-                    put("id", b.id); put("starterId", b.starterId)
+                    put("id", b.id)
+                    putOpt("starterId", b.starterId)
+                    putOpt("recipeId", b.recipeId)
+                    putOpt("recipeContentVersion", b.recipeContentVersion)
+                    put("status", b.status.name)
+                    put("scale", b.scale)
                     put("timestampEpochMs", b.timestampEpochMs)
+                    putOpt("startedAtEpochMs", b.startedAtEpochMs)
+                    putOpt("heldAtEpochMs", b.heldAtEpochMs)
                     putOpt("levainNotes", b.levainNotes)
-                    put("outcomeRating", b.outcomeRating)
+                    putOpt("outcomeRating", b.outcomeRating)
                     putOpt("photoPath", b.photoPath)
                     putOpt("note", b.note)
+                })
+            }
+        })
+        put("bakeSteps", JSONArray().apply {
+            dao.getAllBakeSteps().forEach { s ->
+                put(JSONObject().apply {
+                    put("id", s.id); put("bakeId", s.bakeId); put("position", s.position)
+                    put("title", s.title); put("instruction", s.instruction)
+                    put("kind", s.kind.name)
+                    putOpt("cue", s.cue)
+                    putOpt("plannedDurationMinutes", s.plannedDurationMinutes)
+                    putOpt("dueAtEpochMs", s.dueAtEpochMs)
+                    putOpt("completedAtEpochMs", s.completedAtEpochMs)
                 })
             }
         })
     }
 
     private suspend fun importJson(json: JSONObject) {
-        dao.clearStarters() // children cascade
+        dao.clearStarters() // feedings and observations cascade
+        dao.clearBakes() // bakes no longer cascade from starters; steps cascade from bakes
 
         val starters = json.getJSONArray("starters")
         for (i in 0 until starters.length()) {
@@ -179,14 +205,55 @@ class BackupManager(
             dao.insertBake(
                 Bake(
                     id = b.getLong("id"),
-                    starterId = b.getLong("starterId"),
+                    // Format 1 always had a starter and always had a rating;
+                    // format 2 may have neither (yeasted bread, bake in progress).
+                    starterId = b.optLongOrNull("starterId"),
+                    recipeId = b.optString("recipeId", "").ifEmpty { null },
+                    recipeContentVersion = if (b.has("recipeContentVersion") && !b.isNull("recipeContentVersion")) {
+                        b.getInt("recipeContentVersion")
+                    } else {
+                        null
+                    },
+                    status = BakeStatus.valueOf(b.optString("status", BakeStatus.FINISHED.name)),
+                    scale = b.optDouble("scale", 1.0),
                     timestampEpochMs = b.getLong("timestampEpochMs"),
+                    startedAtEpochMs = b.optLongOrNull("startedAtEpochMs"),
+                    heldAtEpochMs = b.optLongOrNull("heldAtEpochMs"),
                     levainNotes = b.optString("levainNotes", "").ifEmpty { null },
-                    outcomeRating = b.getInt("outcomeRating"),
+                    outcomeRating = if (b.has("outcomeRating") && !b.isNull("outcomeRating")) {
+                        b.getInt("outcomeRating")
+                    } else {
+                        null
+                    },
                     photoPath = b.optString("photoPath", "").ifEmpty { null },
                     note = b.optString("note", "").ifEmpty { null },
                 )
             )
+        }
+
+        // Absent in format 1 archives — nothing to restore, which is correct.
+        val steps = json.optJSONArray("bakeSteps")
+        if (steps != null) {
+            val parsed = (0 until steps.length()).map { i ->
+                val s = steps.getJSONObject(i)
+                BakeStep(
+                    id = s.getLong("id"),
+                    bakeId = s.getLong("bakeId"),
+                    position = s.getInt("position"),
+                    title = s.getString("title"),
+                    instruction = s.getString("instruction"),
+                    kind = StepKind.valueOf(s.getString("kind")),
+                    cue = s.optString("cue", "").ifEmpty { null },
+                    plannedDurationMinutes = if (s.has("plannedDurationMinutes") && !s.isNull("plannedDurationMinutes")) {
+                        s.getInt("plannedDurationMinutes")
+                    } else {
+                        null
+                    },
+                    dueAtEpochMs = s.optLongOrNull("dueAtEpochMs"),
+                    completedAtEpochMs = s.optLongOrNull("completedAtEpochMs"),
+                )
+            }
+            if (parsed.isNotEmpty()) dao.insertBakeSteps(parsed)
         }
     }
 
