@@ -27,7 +27,20 @@
 
         <receiver
             android:name=".reminders.DueAlarmReceiver"
-            android:exported="false" />
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.ayushojha.levain.action.FEEDING_DUE" />
+                <action android:name="com.ayushojha.levain.action.BAKE_STEP_DUE" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".reminders.ExactAlarmPermissionReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.app.action.SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED" />
+            </intent-filter>
+        </receiver>
 
         <receiver
             android:name=".widget.DueWidgetReceiver"

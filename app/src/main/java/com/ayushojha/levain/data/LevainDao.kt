@@ -135,6 +135,12 @@ interface LevainDao {
     @Query("SELECT * FROM bake_step WHERE bakeId = :bakeId ORDER BY position")
     suspend fun getBakeSteps(bakeId: Long): List<BakeStep>
 
+    @Query("SELECT * FROM bake_step WHERE id = :id")
+    suspend fun getBakeStep(id: Long): BakeStep?
+
+    @Query("SELECT * FROM bake WHERE id = :id")
+    suspend fun getBake(id: Long): Bake?
+
     @Update
     suspend fun updateBake(bake: Bake)
 

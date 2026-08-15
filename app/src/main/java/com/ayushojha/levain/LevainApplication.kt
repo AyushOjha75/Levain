@@ -24,6 +24,11 @@ class AppContainer(context: Context) {
         database,
         java.io.File(context.filesDir, "photos"),
     )
+    val bakeSessions = com.ayushojha.levain.data.BakeSessions(
+        database,
+        AlarmDueScheduler(context, com.ayushojha.levain.reminders.AlarmPurpose.BAKE_STEP_DUE),
+        clock,
+    )
     val recipeCatalog = com.ayushojha.levain.data.RecipeCatalog(
         database,
         com.ayushojha.levain.data.AssetRecipeSource(context.assets),

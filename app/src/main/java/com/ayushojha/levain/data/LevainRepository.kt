@@ -24,6 +24,7 @@ class LevainRepository(
     fun observeBakes(starterId: Long): Flow<List<Bake>> = dao.observeBakes(starterId)
 
     suspend fun getStarter(id: Long): Starter? = dao.getStarter(id)
+    suspend fun getStarters(): List<Starter> = dao.getStarters()
     suspend fun getLastFeeding(starterId: Long): Feeding? = dao.getLastFeeding(starterId)
 
     suspend fun createStarter(starter: Starter): Long {
