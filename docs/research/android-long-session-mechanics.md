@@ -134,6 +134,168 @@ At one alarm at a time, even the Rare bucket's 1/hour is survivable and Restrict
 
 ---
 
+## 4. Notification actions from the shade
+
+### 4.1 The shape of an action
+
+A notification may carry *"up to three action buttons that let the user respond quickly, such as to snooze a reminder"*, and they *"must not duplicate the action performed when the user taps the notification"* ([Create a notification][notify]). Three is the budget, which maps neatly onto a Step prompt: **Done**, **Snooze**, **Extend** (or `Hold`). The Bake's own screen carries everything else via `setContentIntent`.
+
+Each action is a `PendingIntent`. The three targets:
+
+| Target | Fit for Levain |
+|---|---|
+| `getBroadcast()` | **Correct choice.** The docs recommend it precisely for this: *"instead of launching an activity, you can do other things such as start a `BroadcastReceiver` that performs a job in the background so that the action doesn't interrupt the app that's already open"* ([Create a notification][notify]). Marking a Step done should not yank the user into the app. |
+| `getActivity()` | Right for the notification *body* tap (open the Bake), wrong for Done/Snooze. |
+| `getService()` | Avoid — on API 31+ a background service start is restricted, and a foreground service needs a type (§2.1). |
+
+### 4.2 How the action reaches the repository
+
+The path is the one `DueAlarmReceiver` already uses, and it is the correct one:
+
+```
+Notification action tapped
+  → PendingIntent.getBroadcast fires
+  → BroadcastReceiver.onReceive (main thread, ~10s budget)
+  → goAsync()                       // extend past onReceive returning
+  → CoroutineScope(Dispatchers.IO)
+  → appContainer.repository.<mutation>()
+  → coordinator.reschedule(now)     // re-arm the single alarm
+  → result.finish()
+```
+
+`goAsync()` is what makes this safe: without it, the process may be killed the moment `onReceive` returns, mid-write. `DueAlarmReceiver` already does exactly this. For a Bake the receiver needs an `Intent` action plus a Step id extra to distinguish Done / Snooze / Extend — which drives the `PendingIntent` identity rules below.
+
+**The mutation must be idempotent.** A user can tap Done on a stale notification long after the Step was completed in-app. `ReminderCoordinator` already models this correctly for feedings via `lastNotifiedDueAtEpochMs`; a Step needs the same guard — completing an already-complete Step is a no-op, not a second completion that shifts the `Projection`.
+
+### 4.3 PendingIntent flags
+
+**Mutability is mandatory from API 31.** *"If your app attempts to create a `PendingIntent` object without setting either mutability flag, the system throws an `IllegalArgumentException`"* with the message *"Targeting S+ (version 31 and above) requires that one of `FLAG_IMMUTABLE` or `FLAG_MUTABLE` be specified when creating a PendingIntent"* ([Intents and intent filters][intents]). The guidance is to *"Create immutable pending intents whenever possible"*; `FLAG_MUTABLE` is needed only for direct-reply (`RemoteInput`) and bubbles ([Intents and intent filters][intents]). Levain's Done/Snooze/Extend actions carry no user text, so **`FLAG_IMMUTABLE` throughout**. `Adapters.kt` already uses `FLAG_UPDATE_CURRENT or FLAG_IMMUTABLE` correctly.
+
+**Identity is `(requestCode, Intent.filterEquals)` — and `filterEquals` ignores extras.** This is the single most common bug in per-item notification actions. Two `PendingIntent`s built from `Intent(ctx, StepActionReceiver::class)` with different `stepId` *extras* but the same `requestCode` are the **same** `PendingIntent`; with `FLAG_UPDATE_CURRENT` the second silently overwrites the first's extras, and every button then acts on one Step. The docs state the rule in the direct-reply context: *"If you reuse a `PendingIntent`, a user might reply to a different conversation than the one they intend. You must provide a request code that is different for each conversation or provide an intent that doesn't return `true` when you call `equals()` on the reply intent of any other conversation"* ([Create a notification][notify]).
+
+Two fixes, use both:
+- Give each `(stepId, action)` pair a distinct `requestCode`.
+- Make the intents genuinely unequal — distinct `Intent.action` strings (`ACTION_STEP_DONE`, `ACTION_STEP_SNOOZE`, `ACTION_STEP_EXTEND`) and a `data` `Uri` such as `levain://bake/{bakeId}/step/{stepId}`, since `filterEquals` compares action, data, type, package, component and categories.
+
+Note that `AlarmDueScheduler.pendingIntent()` currently hardcodes `requestCode = 0` with no action or data. For the single feeding alarm that is deliberate and correct — it is what makes `cancel()` and re-arm target the same alarm. When Bakes are added, the Bake alarm must use a *different* request code or a distinguishing action, or arming a Step alarm will silently cancel the feeding alarm.
+
+**`FLAG_UPDATE_CURRENT` vs `FLAG_ONE_SHOT`.** `FLAG_UPDATE_CURRENT` (current usage) is right for the alarm, which is re-armed repeatedly. For notification actions, `FLAG_UPDATE_CURRENT` ensures a rebuilt notification's buttons carry fresh extras.
+
+### 4.4 The API 31+ trampoline ban
+
+*"Apps that target Android 12 or higher can't start activities from services or broadcast receivers that are used as notification trampolines. In other words, after the user taps on a notification, or an action button within the notification, your app cannot call `startActivity()` inside of a service or broadcast receiver."* ([Android 12 behavior changes][b12]) The system blocks the start and logs:
+
+```
+Indirect notification activity start (trampoline) from PACKAGE_NAME,
+    this should be avoided for performance reasons.
+```
+
+The prescribed fix is to point the notification at the activity directly: *"Create a `PendingIntent` object that is associated with the activity that users see after they tap on the notification"* and use it via `setContentIntent()` ([Android 12 behavior changes][b12]).
+
+**What this means for Levain, concretely.** The tempting pattern — one receiver that handles Done/Snooze *and*, for a `Judged` Step, opens the Bake screen so the baker can assess the crumb — is exactly the banned trampoline. Instead:
+
+- Actions that only mutate state (Done, Snooze, Extend) → `getBroadcast` → receiver. Never call `startActivity` from it.
+- Actions that must show UI (open the Bake, log a `Health observation`, judge a `Judged` Step) → `getActivity` with a deep-link `Intent` straight to `MainActivity`, resolved by the activity itself. One hop, no receiver in between.
+
+The existing `DueNotificationPresenter` is already compliant: `setContentIntent` holds a `getActivity` `PendingIntent` to `MainActivity`, and `DueAlarmReceiver` never starts an activity.
+
+### 4.5 Two operational constraints
+
+- **Rate limiting.** *"Android applies a rate limit when updating a notification. If you post updates to a notification too frequently—many in less than one second—the system might drop updates"* ([Create a notification][notify]). A live countdown in the ongoing Bake notification must tick at most every few seconds — or better, use `setUsesChronometer(true)` with `setWhen(dueAtEpochMs)` and let the system render the countdown with zero updates.
+- **Alerting once.** Use `setOnlyAlertOnce()` on the ongoing Bake notification *"so your notification interrupts the user—with sound, vibration, or visual clues—only the first time"* ([Create a notification][notify]). The per-Step prompt is a separate, higher-importance notification that *should* alert.
+- **`POST_NOTIFICATIONS` (API 33+).** *"Android 13 (API level 33) and higher supports a runtime permission for posting non-exempt (including Foreground Services (FGS)) notifications from an app"* ([Create a notification][notify]). Without it, every prompt in a 24-hour Bake is silently dropped. `targetSdk 34` means this must be requested — ideally at the moment the user starts their first Bake, where the rationale is self-evident.
+
+---
+
+## 5. Recovery after process death and reboot
+
+### 5.1 The rule
+
+**Persist the facts; recompute the `Projection`.** Android will kill the process: *"To determine which processes to kill when low on memory, Android places each process into an importance hierarchy"*, and a backgrounded app is a cached process which *"the system is free to kill as needed"* ([Processes and app lifecycle][proclife]). Even a foreground service only buys "visible" ranking, not immunity — *"Only in very critical situations does the system get to a point where all cached processes are killed and it must start killing service processes"* ([Processes and app lifecycle][proclife]). A 24-hour Bake will outlive its process. Recovery is not a fallback path; it is the normal path.
+
+### 5.2 Persist
+
+Room, written synchronously at each transition:
+
+| Persist | Why |
+|---|---|
+| `Bake` row: recipe id, `scale`, `status` (`planned`/`active`/`held`/`finished`/`abandoned`), `startedAtEpochMs` | Identity and lifecycle. `CONTEXT.md` already makes the live session and the history entry the same row — this is exactly right for recovery: there is no separate "session" object to lose. |
+| `Step` rows, **snapshotted at Bake start**, with repeats already expanded | `CONTEXT.md`: Steps are *"snapshotted from the Recipe when the Bake starts — never read live from the Recipe"*. Recovery therefore never depends on bundled content that may have changed under an app update. |
+| Per Step: `dueAtEpochMs`, `completedAtEpochMs`, `snoozedUntilEpochMs` | **Absolute epoch instants, never durations-from-now.** A duration is meaningless after a reboot; an `Instant` is not. |
+| `Hold`: `heldAtEpochMs`, `resumedAtEpochMs` | A `Hold` *"stops the timeline recalculating altogether, and resuming recomputes the remaining Steps from the moment of resume"* — so the hold boundaries are facts, and everything downstream is derived. |
+| Per Step: `lastNotifiedDueAtEpochMs` | The existing idempotence guard, generalised from `Starter` to `Step`. Stops a reboot at the wrong moment re-firing a prompt the baker already dismissed. |
+
+### 5.3 Recompute, never persist
+
+- The `Projection` — *"derived from actual Step completion times and recalculates whenever one lands early or late"* (`CONTEXT.md`). Storing it invites a stale projection surviving a crash.
+- Which alarm is armed. The set of pending alarms is **not** durable state: reboot clears all of them, and so does revoking `SCHEDULE_EXACT_ALARM` (*"your app stops, and all future exact alarms are canceled"* — [Schedule alarms][alarms]). The alarm is a cache of "what Room says is next", rebuilt on demand.
+- Elapsed time. Compute `now - startedAtEpochMs`; never accumulate a counter in memory.
+
+### 5.4 Restore triggers
+
+All four run the same function — a `BakeCoordinator.reschedule(now)` mirroring `ReminderCoordinator.reschedule`:
+
+1. **`ACTION_BOOT_COMPLETED`.** `BootCompletedReceiver` exists and already calls into the repository; extend it to Bakes. Note it must **not** try to start a foreground service on API 35 for most types ([Android 15 behavior changes][b15]) — re-arming an alarm is unaffected.
+2. **`ACTION_SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED`.** Currently missing. The docs prescribe a receiver that confirms `canScheduleExactAlarms()` then *"Reschedules any exact alarms that your app needs, based on its current state"* ([Schedule alarms][alarms]).
+3. **App start / `ON_START`.** Cheap self-heal for the OEM case (§6): if the app is open and no alarm is armed, arm one.
+4. **`ACTION_MY_PACKAGE_REPLACED`.** App updates kill alarms too.
+
+### 5.5 Catch-up on restore
+
+Restoring after a gap must handle Steps whose `dueAt` is already in the past — a phone off for two hours mid-bulk, or an OEM that swallowed the alarm. `ReminderCoordinator` already encodes the right answer: `scheduler.scheduleExact(maxOf(nextDueAt, now))` — *"past-due events still need a firing; clamped to now"*. For a Bake, that clamp should fire once with an honest "this Step was due 40 minutes ago" and let the `Projection` absorb the drift, rather than firing a burst of ~5 stale prompts. This is the same coalescing instinct as the existing 15-minute `coalesceWindow`, applied backwards in time.
+
+---
+
+## 6. OEM battery killers
+
+### 6.1 What actually happens
+
+dontkillmyapp.com rates vendors by how badly they break background work; **Huawei, Xiaomi, OnePlus and Samsung all sit at the worst tier (5/5)**, with Meizu, Asus and Oppo at 4/5, while AOSP-line devices (Pixel, Android One), Nokia/HMD and HTC rate clean ([dontkillmyapp][dkma]). The characterisation is blunt: manufacturers *"prefer battery life over proper functionality of your apps"*, and under default settings *"background processing simply does not work right and apps using them will break"* ([dontkillmyapp: Xiaomi][dkmaxiaomi]).
+
+Mechanically, three distinct things are done, none of them documented APIs:
+
+1. **Autostart / boot denial.** MIUI's Autostart Manager gates whether the app may run at boot at all ([dontkillmyapp: Xiaomi][dkmaxiaomi]). If denied, `BOOT_COMPLETED` never arrives and §5.4's primary restore trigger is dead.
+2. **Aggressive process termination.** Swiping the app from recents, or the screen going off, can kill the process *and* clear its scheduled alarms — including foreground services. Pinning/locking the app in the recents tray is the vendor-blessed workaround ([dontkillmyapp: Xiaomi][dkmaxiaomi]).
+3. **Vendor battery savers layered on top of Doze.** MIUI's per-app "App Battery Saver" modes, Samsung's sleeping/deep-sleeping app lists, and OnePlus's advanced optimisation each add restrictions AOSP does not, and none of them are visible to `PowerManager.isIgnoringBatteryOptimizations()`.
+
+**The consequence for the design:** a long-running foreground service is *not* the mitigation people assume. It is precisely the thing MIUI and OneUI target. An exact alarm re-armed from durable Room state degrades better — it needs the process alive only for milliseconds, twenty times.
+
+### 6.2 Accepted mitigations
+
+**In the app:**
+
+- **Room as source of truth + re-arm on every app open** (§5.4 trigger 3). This is the mitigation that actually works, because it does not depend on the OEM honouring anything: the next time the baker looks at their phone, the schedule self-heals.
+- **`setAlarmClock()`.** Vendor skins are markedly more careful with alarm-clock alarms than with generic ones, because killing them produces the one bug users unambiguously blame the phone for.
+- **A WorkManager periodic watchdog** that re-asserts the alarm. Belt and braces, and cheap.
+- **Detect and tell the user.** `PowerManager.isIgnoringBatteryOptimizations()` gives the AOSP half of the picture ([Doze and App Standby][doze]); MIUI's autostart state can be read via the community `MIUI-autostart` library ([dontkillmyapp: Xiaomi][dkmaxiaomi]). When a long Bake is being started on a known-bad vendor, a one-time explainer pointing at the right settings screen is the accepted pattern — dontkillmyapp exists to be linked to.
+- **`ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS`** to deep-link the user to the battery-optimisation settings screen. *"Most apps can invoke an intent containing `ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS`, which takes users to the battery optimization settings where they can manually exempt the app"* ([Doze and App Standby][doze]). This is the Play-safe route; see §7 for why the direct-request variant is not.
+
+**Note what an exemption does not buy you.** Even a granted exemption *"allows use of the network during Doze and App Standby"* and *"the ability to hold partial wake locks"* — but *"Regular `AlarmManager` alarms do not fire"* and jobs/syncs stay deferred ([Doze and App Standby][doze]). So it is not a substitute for using the right alarm API; it is orthogonal.
+
+**Outside the app:** dontkillmyapp's own developer advice is to report device-specific breakage to Google via its IssueTracker template, and it points at Google's CTS-D (Compatibility Test Suite for Data) as the lever slowly forcing vendors into line ([dontkillmyapp][dkma]).
+
+### 6.3 What shipping cooking-timer apps do
+
+The observable pattern across long-session cooking and fermentation apps (and it is a pattern of resignation, not cleverness): exact alarms for the prompts, an ongoing notification rather than a 24-hour foreground service, full state in a local database so the timeline can be rebuilt from cold, a `BOOT_COMPLETED` receiver, and a first-run or first-long-session interstitial that tells the user to exempt the app from battery optimisation — usually linking dontkillmyapp.com. None of them solve the OEM problem; they detect it, warn about it, and make recovery cheap. **This is the correct posture for Levain too: assume the alarm may be lost, and make the cost of losing it a late prompt rather than a corrupt Bake.**
+
+---
+
+## 7. Google Play policy constraints
+
+Relevant only if Levain is ever listed — it is personal-first today — but each of these constrains a design decision above, so they are worth fixing now rather than retrofitting.
+
+**1. Exact alarms.** `USE_EXACT_ALARM` is a restricted permission with exactly two eligible use cases: *"The app is an alarm or timer app"* and *"The app is a calendar app that shows event notifications"*; otherwise *"you should evaluate if using `SCHEDULE_EXACT_ALARM` as an alternative is an option"* ([Play: Permissions and APIs][playperms]). Enforcement is at publication: *"Apps will not be able to publish a version of their app with this permission in the manifest unless they qualify based on the policy language"* ([Android 14: exact alarms denied by default][b14alarm]). A Bake timer has a real claim to "timer app", but a sourdough *tracker* is a mixed case. **Design implication: keep the exact-alarm call behind the `DueScheduler` interface it is already behind, so switching permission model is a one-file change.**
+
+**2. Foreground service types are declared and reviewed.** All foreground services must be declared on the Play Console app content page, and `specialUse` additionally requires a `PROPERTY_SPECIAL_USE_FGS_SUBTYPE` explanation that *"is reviewed during Google Play submission"* ([foreground service types][fgstypes]). **Design implication: the recommended no-FGS design has nothing to declare and nothing to justify — a real, if unglamorous, advantage.**
+
+**3. Battery-optimisation exemption is close to prohibited.** *"Google Play policies prohibit apps from requesting direct exemption from Power Management features—Doze and App Standby—in Android 6.0 and above unless the core function of the app is adversely affected"* ([Doze and App Standby][doze]). The published acceptable list — messaging/VOIP that technically cannot use FCM, safety apps, task-automation apps, peripheral companion apps needing a persistent connection — does not include cooking timers ([Doze and App Standby][doze]). **Design implication: use `ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS` (settings deep link, allowed for most apps) and never `ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS` (direct request, policy-gated).**
+
+**4. Notifications.** `POST_NOTIFICATIONS` is a runtime permission from API 33 ([Create a notification][notify]); Play's broader policy expects notifications to be functional and requested with context. Requesting at "start your first Bake" rather than at cold launch is both better UX and safer ground.
+
+**5. General.** Nothing in the recommended design touches a sensitive or restricted permission beyond the exact-alarm choice: no location, no background location, no `QUERY_ALL_PACKAGES`, no accessibility service, no `SYSTEM_ALERT_WINDOW` (which Android 15 narrowed as an FGS-start exemption anyway — an app now *"needs to have the `SYSTEM_ALERT_WINDOW` permission and also have a visible overlay window"* ([Android 15 behavior changes][b15])).
+
+---
+
 ## 8. Sources
 
 - [alarms]: Schedule alarms — https://developer.android.com/develop/background-work/services/alarms/schedule
@@ -145,6 +307,13 @@ At one alarm at a time, even the Rare bucket's 1/hour is survivable and Restrict
 - [b15]: Behavior changes: Apps targeting Android 15 — https://developer.android.com/about/versions/15/behavior-changes-15
 - [powerdetails]: Power management resource limits — https://developer.android.com/topic/performance/power/power-details
 - [playperms]: Play — Permissions and APIs that Access Sensitive Information — https://support.google.com/googleplay/android-developer/answer/9888170
+- [notify]: Create a notification — https://developer.android.com/develop/ui/views/notifications/build-notification
+- [intents]: Intents and intent filters (Declare the mutability of a PendingIntent) — https://developer.android.com/guide/components/intents-filters
+- [proclife]: Processes and app lifecycle — https://developer.android.com/guide/components/activities/process-lifecycle
+- [dkma]: Don't kill my app! — https://dontkillmyapp.com/
+- [dkmaxiaomi]: Don't kill my app! — Xiaomi — https://dontkillmyapp.com/xiaomi
+
+All primary sources retrieved 2026-08-16. Behaviour statements are tied to the API level named in the text; Android's power-management numbers are explicitly *"not guaranteed"* and *"subject to change in future Android releases"* ([Power management resource limits][powerdetails]), so the App Standby quota table should be treated as indicative, not contractual.
 
 [alarms]: https://developer.android.com/develop/background-work/services/alarms/schedule
 [doze]: https://developer.android.com/training/monitoring-device-state/doze-standby
@@ -155,3 +324,8 @@ At one alarm at a time, even the Rare bucket's 1/hour is survivable and Restrict
 [b15]: https://developer.android.com/about/versions/15/behavior-changes-15
 [powerdetails]: https://developer.android.com/topic/performance/power/power-details
 [playperms]: https://support.google.com/googleplay/android-developer/answer/9888170
+[notify]: https://developer.android.com/develop/ui/views/notifications/build-notification
+[intents]: https://developer.android.com/guide/components/intents-filters
+[proclife]: https://developer.android.com/guide/components/activities/process-lifecycle
+[dkma]: https://dontkillmyapp.com/
+[dkmaxiaomi]: https://dontkillmyapp.com/xiaomi
