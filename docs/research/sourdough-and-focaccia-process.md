@@ -403,13 +403,228 @@ lower rack are working to crisp.
 
 ## 3. Timed vs feel-judged: step classification
 
+Classified against the existing `StepKind` in [`CONTEXT.md`](../../CONTEXT.md) and
+[`Entities.kt`](../../app/src/main/java/com/ayushojha/levain/data/Entities.kt) — **TIMED**
+(real duration, real timer), **JUDGED** (baker decides, guided by an advisory estimate *and* an
+observable cue), **ACTION** (done the moment you do it, no duration).
+
+The research supports this three-way split cleanly. It also surfaces one boundary case
+(§3.3) worth deciding deliberately.
+
+### 3.1 Sourdough loaf
+
+| # | Step | Kind | Estimate | Observable cue (JUDGED only) |
+| --- | --- | --- | --- | --- |
+| 1 | Feed starter to build levain | ACTION | — | — |
+| 2 | Levain ripens | **JUDGED** | 5–6 h @ 74–76°F (1:2:2 build); 8–10 h (dilute build) | **Domed and bubbly on top, at the sides and through the middle; smells sweetly sour, not sharp; just at or just past its peak.** Confirm with the float test if unsure. |
+| 3 | Mix flour and water (autolyse) | ACTION | — | — |
+| 4 | Autolyse rest | **TIMED** | 40 min – 1 h | — |
+| 5 | Add levain and salt, mix | ACTION | — | — |
+| 6 | Check dough temperature | ACTION | target 76–78°F (24–25°C) | — |
+| 7 | Rest before first fold | **TIMED** | 30 min | — |
+| 8 | Fold, set 1 of 3 | ACTION | — | — |
+| 9 | Rest between folds (×2) | **TIMED** | 30 min each | — |
+| 10 | Folds, sets 2 and 3 | ACTION | — | — |
+| 11 | Bulk fermentation completes | **JUDGED** | 3–5 h total @ 74–78°F | **Risen by a quarter to a half (more for white flour, less for whole grain). Puffy — it jiggles as one mass when you shake the bowl. The top skin is taut and slightly domed, and the edge where the dough meets the bowl curves up rather than sagging. Bubbles visible on top and through the sides.** |
+| 12 | Turn out and pre-shape | ACTION | — | — |
+| 13 | Bench rest | **TIMED** | 20–30 min | — |
+| 14 | Final shape into banneton | ACTION | — | — |
+| 15 | Rest at room temperature | **TIMED** | 20 min | — |
+| 16 | Cold retard in fridge | **TIMED** | 12–18 h @ 38°F (3°C) | — |
+| 16a | *(alt)* Room-temperature proof | **JUDGED** | 2–4 h @ 75–80°F | **Poke test: a floured fingertip pressed ~1 cm in springs back slowly and partially, leaving a shallow dent. Springs back fast and fully = not yet. Doesn't spring back at all = gone too far.** Loaf looks puffed and holds a dome. |
+| 17 | Preheat oven and Dutch oven | **TIMED** | 45 min–1 h @ 450–500°F | — |
+| 18 | Score the loaf | ACTION | — | — |
+| 19 | Bake covered | **TIMED** | 20 min | — |
+| 20 | Remove lid | ACTION | — | — |
+| 21 | Bake uncovered | **TIMED** | 20–30 min | — |
+| 22 | Confirm doneness | **JUDGED** | — | **Crust is deep mahogany/chestnut, darker than feels comfortable. Hollow when tapped on the base. Internal temperature 205–210°F (96–99°C).** |
+| 23 | Cool on a rack | **TIMED** | 1–2 h | — |
+
+### 3.2 Focaccia
+
+| # | Step | Kind | Estimate | Observable cue (JUDGED only) |
+| --- | --- | --- | --- | --- |
+| 1 | *(sourdough route only)* Feed starter | ACTION | — | — |
+| 2 | *(sourdough route only)* Levain ripens | **JUDGED** | 5–6 h | **As §3.1 step 2** — domed, bubbly, sweetly sour. |
+| 3 | Mix flour, water, salt, leaven | ACTION | — | — |
+| 4 | Rest, then work in olive oil | **TIMED** | 10 min | — |
+| 5 | Check dough temperature | ACTION | target 76°F (24°C) | — |
+| 6 | Rest before first fold | **TIMED** | 30 min | — |
+| 7 | Folds ×4 with rests | ACTION / **TIMED** | 30 min between sets | — |
+| 8 | Bulk fermentation completes | **JUDGED** | 1–2 h @ 70–78°F | **Nearly doubled and very puffy; the surface is domed and shows bubbles.** (Shorter than the loaf — the pan proof carries the rest.) |
+| 8a | *(alt)* Cold retard in the bowl | **TIMED** | 8–24 h in the fridge | — |
+| 9 | Oil the pan | ACTION | — | — |
+| 10 | Transfer dough to pan | ACTION | — | — |
+| 11 | Stretch toward the pan edges (repeat ~3×) | **JUDGED** | every 30 min for the first hour | **The dough stops retracting — it stays where you put it instead of pulling back from the corners within a minute.** |
+| 12 | Pan proof | **JUDGED** | 2–3 h yeasted; 4–6 h sourdough | **Marshmallowy and jiggly. It has nearly filled the corners and sits very close to the top edge of the pan. Large bubbles visible under the surface.** |
+| 12a | *(alt)* Cold retard in the pan | **TIMED** | overnight, after ~2 h in the pan | — |
+| 12b | *(if retarded)* Come to room temperature | **JUDGED** | 1–2 h | **The pan is no longer cold to the touch and the dough has loosened and re-puffed.** Focaccia does *not* bake from cold. |
+| 13 | Preheat oven | **TIMED** | 20–30 min @ 425–475°F | — |
+| 14 | Dimple | **JUDGED** | — | **Fingertips reach the bottom of the pan, dimples ~1½" apart, and the dough between them stays puffed. If it sighs flat and doesn't recover, you were too heavy.** |
+| 15 | Drizzle oil, salt, add toppings | ACTION | — | — |
+| 16 | Bake | **TIMED** | 15–18 min (9" square @ 475°F); 25–30 min (9"×13" @ 450°F) | — |
+| 17 | Confirm doneness | **JUDGED** | — | **Brown on the raised spots, golden in the crevices. The base, lifted with a spatula, is evenly golden and crisp — not pale, not oil-logged. Internal temperature 190–210°F (88–99°C). Do not tap for hollowness — it doesn't work on focaccia.** |
+| 18 | Lift from pan onto a rack | ACTION | — | — |
+
+### 3.3 The boundary case: folds
+
+A fold set is arguably **two** steps and the app has to pick a representation:
+
+- The **waiting interval** between sets is unambiguously TIMED — 30 minutes, on a clock, and
+  every source agrees. This is the one place a timer is genuinely authoritative.
+- The **act of folding** is an ACTION — instantaneous, ticked off.
+- But the **number of sets** has a judged component: sources give 3–4, and the real stopping
+  condition is that the dough has come together smooth and cohesive and resists further
+  stretching. A stiffer dough needs fewer.
+
+The `CONTEXT.md` design of expanding repeats at snapshot ("four folds, thirty minutes apart"
+becomes four Steps) handles this correctly, **provided the last fold or two is skippable
+without breaking the projection**. Recommendation: model each set as a TIMED rest followed by
+an ACTION fold, and let the baker complete the bulk JUDGED step early — which naturally
+abandons remaining fold steps.
+
+### 3.4 The general rule the sources support
+
+**A step is TIMED when its duration is set by physics or by convention rather than by the
+dough's state**: rests, preheats, bake phases, cooling, cold retards (the fridge is cold enough
+that an extra two hours changes little). **A step is JUDGED when biology sets the duration**:
+anything where yeast and bacteria decide — levain ripeness, bulk, proof, pan proof.
+
+Two consequences worth noting:
+
+1. **Every JUDGED step is a fermentation step, and every fermentation step is JUDGED.** The
+   only exceptions are the cold retards, which are TIMED precisely because refrigeration
+   flattens the rate curve.
+2. **Doneness at the oven is JUDGED even though it has a number.** Internal temperature is
+   measurable, but the primary cues are colour and crust, the temperature window is wide
+   (205–210°F loaf; 190–210°F focaccia), and not every baker owns a probe. It needs the cue
+   text, not just a threshold.
+
 ---
 
 ## 4. Shared vs divergent structure
 
+### 4.1 The shared spine
+
+Reduced to essentials, both breads run the same seven-phase spine:
+
+```
+LEAVEN  →  MIX  →  BULK (+ folds)  →  PRE-BAKE FORM  →  PROOF  →  BAKE  →  REST
+```
+
+Every phase is present in both. Nothing in focaccia is absent from the loaf's sequence — the
+phases are **occupied differently**, not removed. That is the key structural finding, and it
+means a single Step model covers both without optional phases or null-shaped holes.
+
+Phase-by-phase, what is genuinely shared:
+
+| Phase | Shared across both breads |
+| --- | --- |
+| Leaven | A ripeness JUDGED step with the same cue (domed, bubbly, sour aroma) — *when a starter is used* |
+| Mix | Combine flour/water/salt/leaven; a dough-temperature target; an ACTION |
+| Bulk | A JUDGED fermentation with a TIMED fold schedule inside it, folds front-loaded, 30-min intervals, ~4 folds per set |
+| Pre-bake form | A single transition from bulk vessel to bake vessel |
+| Proof | A JUDGED rise with a room-temp path and a cold-retard alternative |
+| Bake | Preheat (TIMED), bake (TIMED), doneness (JUDGED with colour + internal temp) |
+| Rest | Cooling before eating (TIMED) |
+
+### 4.2 Where they diverge
+
+| Phase | Sourdough loaf | Focaccia |
+| --- | --- | --- |
+| **Leaven** | Always a starter; levain build is mandatory | **Starter *or* commercial yeast.** Yeasted route deletes the levain build entirely — yeast goes straight into the mix |
+| **Hydration** | 65–80%, must hold its own shape | 65–88%, typically higher; the pan holds the shape |
+| **Fat** | None (lean) | Olive oil in the dough (2–5%), in the pan, and on top — the pan oil is a *cooking medium*, not a greasing |
+| **Bulk length** | Long: 3–5 h, the dominant fermentation | Short: 1–2 h — total fermentation is redistributed into the pan proof |
+| **Pre-bake form** | **Three steps**: pre-shape → TIMED bench rest → final shape into a banneton. Builds surface tension | **One step**: transfer to an oiled pan, then repeated gentle stretching to the edges. Builds no tension at all |
+| **Proof vessel** | Banneton, seam up | The bake pan itself — proof and bake happen in the same vessel |
+| **Proof length** | 12–18 h cold, or 2–4 h warm | 2–3 h (yeasted) / 4–6 h (sourdough) warm; retard optional |
+| **Retard position** | After shaping, before bake — **bake straight from the fridge** | Either *before* panning (KAB) or *mid-pan-proof* (TPL) — and **must warm up before baking** |
+| **Surface work** | **Score** with a lame, immediately before loading | **Dimple** with fingers to the pan floor, then oil, salt, toppings |
+| **Steam** | **Essential** — covered Dutch oven, 20 min, lid off for colour | **None** — dry oven, lower rack; steam would ruin the crisp base |
+| **Bake time** | 40–50 min in two phases (covered/uncovered) | 15–30 min in one phase, driven by pan depth |
+| **Doneness** | 205–210°F; hollow tap **valid** | 190–210°F; hollow tap **invalid**; two-tone colour + crisp base |
+| **Rest** | 1–2 h mandatory, or the crumb is gummy | Minutes; served warm |
+
+### 4.3 Yeasted focaccia specifically
+
+The [KAB yeasted / sourdough pair](https://www.kingarthurbaking.com/recipes/big-and-bubbly-focaccia-sourdough-edition-recipe)
+isolates the difference precisely, since everything but the leaven is held constant:
+
+1. **One step disappears.** The levain build (and its JUDGED ripeness cue) is absent. Instant
+   yeast is an ingredient, not a preparation.
+2. **Every downstream duration shortens.** First rise 1 h vs a starter-paced schedule; pan
+   proof **2–3 h vs 4–6 h**.
+3. **Nothing else changes.** Same flour, same hydration, same folds, same pan, same oil, same
+   dimpling, same bake, same cues. KAB even keeps the wording of the pan-proof cue identical.
+4. **The cues get *more* reliable, not different.** KAB explicitly attributes the sourdough
+   version's wider 4–6 h window to "the ripeness of your starter and the warmth of your
+   kitchen" — the sourdough route is less clock-predictable, which raises the value of the
+   observable cue relative to the estimate.
+
+### 4.4 What this means for the Step model
+
+`CONTEXT.md` currently rules that "sourdough focaccia and yeasted focaccia are two Recipes, not
+one Recipe with a switch." **The research is consistent with that ruling, and gives it a
+concrete justification**: the yeasted route has a genuinely different step *count* (no levain
+build) and different estimates throughout — not merely a different ingredient. Modelling it as
+a switch would mean a Recipe whose step list changes shape, which is exactly what the "options
+only where they don't change the step sequence" rule forbids.
+
+What the shared Step model must express to cover both breads:
+
+1. **The three kinds are sufficient.** Every step in both breads lands cleanly in TIMED,
+   JUDGED, or ACTION. No fourth kind is needed.
+2. **JUDGED steps need an estimate *and* a cue, and the estimate must be a range** — the cue
+   text is doing the real work, and the ranges are wide (pan proof 2–6 h).
+3. **Cues must be per-Recipe strings, not shared enums.** "Marshmallowy and jiggly, nearly
+   filling the corners" and "risen by half, domed at the bowl edge, jiggles as one mass" are
+   both "the proof is done" but share no vocabulary.
+4. **Estimates must be temperature-anchored.** Bulk duration is a function of dough
+   temperature (roughly ±1 h per ±2°F around 76°F). An estimate stated without its reference
+   temperature is misleading. Either state the temperature alongside it or let the projection
+   adjust.
+5. **A JUDGED step completing early or late must reflow everything downstream** — this is the
+   Projection, and it is load-bearing precisely because the two longest steps in both breads
+   are JUDGED.
+6. **Alternative branches are needed for retard vs room-temperature proof**, and the branches
+   differ per bread: the loaf's retard replaces the proof and feeds straight into the bake; the
+   focaccia's retard sits *inside* the proof and adds a warm-up step after it.
+7. **Repeat expansion must tolerate early exit.** Folds expand to N steps, but the baker ending
+   bulk early must not leave orphaned fold steps blocking the timeline.
+8. **A Step must be able to reference a measurement** (dough temperature at mix, internal
+   temperature at doneness) without becoming a timer.
+
 ---
 
 ## 5. Where sources disagree
+
+Collected in one place. **None of these are averaged.**
+
+| # | Question | The disagreement | Why it exists |
+| --- | --- | --- | --- |
+| 1 | **How much should dough rise during bulk?** | TPL: **20–50%**. Tartine: **20–30%**. KAB: "often, but not always, **double**." | TPL's guide argues volumetric rise is *inherently* misleading — white flour doubles while whole-wheat high-hydration is ready at 20–30%. The sources are describing different flour blends, so no single number is right. **Use tactile cues as primary.** |
+| 2 | **Is the float test authoritative for levain?** | Tartine: yes, it's the test. KAB: fine for starter, **not reliable for dough**. TPL: prefers appearance and aroma. | The float test measures gas retention, which correlates with but doesn't equal readiness. Offer as secondary confirmation. |
+| 3 | **Loaf bake temperature** | TPL: flat **450°F**. Tartine: preheat **500°F**, bake at **450°F**. KAB: **425–475°F** by method. | Different vessels and loaf sizes. The **20 min covered / 20–30 min uncovered split** is the part all three agree on — anchor on that, not the number. |
+| 4 | **Focaccia hydration** | TPL **76%**, KAB **~79%**, Serious Eats **65%**, secondary sources **80–88%**. | Two different design targets, not a measurement spread. Low hydration = handleable, no folds, tighter crumb. High = open bubbles, needs folds and a pan. Both are valid focaccia. |
+| 5 | **Focaccia bake temperature and time** | KAB **475°F / 15–18 min**. TPL **450°F / ~30 min**. ThermoWorks **450°F / 20–30 min**. Modernist Pantry **425°F**. | Driven by **pan size and dough depth**, not preference. A 9" square bakes hot and fast; a 9"×13" slab bakes cooler and longer. Bake time must be pan-dependent in the app. |
+| 6 | **Where the focaccia cold retard sits** | KAB: **in the bowl, before panning**, 8–24 h. TPL: **in the pan, mid-proof**, after ~2 h. | A genuine fork in the step graph with different next-day schedules. KAB's route needs a 2–3 h pan window the next day; TPL's goes fridge → warm-up → oven. |
+| 7 | **Does retarded dough bake cold?** | Loaf: **yes**, bake straight from the fridge (TPL, Tartine). Focaccia: **no**, must come to room temperature first (TPL). | Not a contradiction between sources but a difference between breads — worth flagging because the instinct to generalise is strong and the failure is silent. |
+| 8 | **Loaf internal doneness temperature** | TPL **208°F**. KAB adaptations **~206°F**. General range **205–210°F**. | Minor, and within instrument error. Treat 205–210°F as one window. |
+
+### Sources that could not be verified directly
+
+[Serious Eats](https://www.seriouseats.com/) blocks automated fetching, so its parameters here
+(500 g flour / 325 g water / 4 g instant yeast / 15 g salt, overnight room-temperature rest, no
+kneading or stretching) were recovered from search-index excerpts rather than read from the
+page. The figures are consistent across excerpts but should be confirmed against the live page
+before being encoded into a bundled Recipe.
+
+[Modernist Bread](https://modernistcuisine.com/books/modernist-bread/) is not available online;
+the Modernist material cited here is from the publicly published
+[Modernist Pantry](https://blog.modernistpantry.com/recipes/classic-focaccia/) recipe, which is
+adjacent but not the book. Where this document cites "Modernist," read it as that lighter
+source, and treat the book's numbers as still outstanding.
 
 ---
 
