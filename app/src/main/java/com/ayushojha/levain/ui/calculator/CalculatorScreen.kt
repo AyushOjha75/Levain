@@ -18,6 +18,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import com.ayushojha.levain.ui.theme.Spacing
 import com.ayushojha.levain.ui.components.LevainTopBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -49,14 +50,14 @@ fun CalculatorScreen(onBack: () -> Unit) {
         Column(
             modifier = Modifier
                 .padding(padding)
-                .padding(16.dp)
+                .padding(Spacing.l)
                 .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+            verticalArrangement = Arrangement.spacedBy(Spacing.l),
         ) {
             Card {
-                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Column(Modifier.padding(Spacing.l), verticalArrangement = Arrangement.spacedBy(Spacing.m)) {
                     Text("Levain build", style = MaterialTheme.typography.titleLarge)
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(Spacing.s)) {
                         NumberField("Need (g)", state.targetGrams, vm::setTargetGrams, Modifier.weight(1f))
                         NumberField("Hydration %", state.hydrationPct, vm::setHydrationPct, Modifier.weight(1f))
                         NumberField("Seed %", state.inoculationPct, vm::setInoculationPct, Modifier.weight(1f))
@@ -71,13 +72,13 @@ fun CalculatorScreen(onBack: () -> Unit) {
             }
 
             Card {
-                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Column(Modifier.padding(Spacing.l), verticalArrangement = Arrangement.spacedBy(Spacing.m)) {
                     Text("Baker's percentages", style = MaterialTheme.typography.titleLarge)
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(Spacing.s)) {
                         NumberField("Flour (g)", state.doughFlour, vm::setDoughFlour, Modifier.weight(1f))
                         NumberField("Water (g)", state.doughWater, vm::setDoughWater, Modifier.weight(1f))
                     }
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(Spacing.s)) {
                         OutlinedTextField(
                             value = state.doughSalt.let { if (it % 1.0 == 0.0) it.toInt().toString() else it.toString() },
                             onValueChange = { it.toDoubleOrNull()?.let(vm::setDoughSalt) },

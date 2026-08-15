@@ -23,6 +23,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import com.ayushojha.levain.ui.theme.Spacing
 import com.ayushojha.levain.ui.components.LevainTopBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -59,9 +60,9 @@ fun TroubleshootingScreen(onBack: () -> Unit) {
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
-                    .padding(24.dp)
+                    .padding(Spacing.xl)
                     .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(14.dp),
+                verticalArrangement = Arrangement.spacedBy(Spacing.m),
             ) {
                 when (node) {
                     is TroubleshootingNode.Question -> {
@@ -70,7 +71,7 @@ fun TroubleshootingScreen(onBack: () -> Unit) {
                             Text(
                                 node.text,
                                 style = MaterialTheme.typography.headlineSmall,
-                                modifier = Modifier.padding(start = 12.dp),
+                                modifier = Modifier.padding(start = Spacing.m),
                             )
                         }
                         node.options.forEach { (label, next) ->
@@ -90,7 +91,7 @@ fun TroubleshootingScreen(onBack: () -> Unit) {
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                         Card {
-                            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Column(Modifier.padding(Spacing.l), verticalArrangement = Arrangement.spacedBy(Spacing.s)) {
                                 Text("The plan", style = MaterialTheme.typography.titleMedium)
                                 node.plan.forEachIndexed { i, step ->
                                     Text("${i + 1}. $step", style = MaterialTheme.typography.bodyMedium)

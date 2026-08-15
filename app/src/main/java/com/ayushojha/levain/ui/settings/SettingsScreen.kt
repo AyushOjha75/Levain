@@ -18,6 +18,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import com.ayushojha.levain.ui.theme.Spacing
 import com.ayushojha.levain.ui.components.LevainTopBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -61,8 +62,8 @@ fun SettingsScreen(onBack: () -> Unit) {
         containerColor = MaterialTheme.colorScheme.background,
     ) { padding ->
         Column(
-            modifier = Modifier.padding(padding).padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier.padding(padding).padding(Spacing.l),
+            verticalArrangement = Arrangement.spacedBy(Spacing.l),
         ) {
             Text(
                 "Your starters live only on this phone. Export everything — data and photos — to a file you keep somewhere safe.",

@@ -19,6 +19,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import com.ayushojha.levain.ui.theme.Spacing
 import com.ayushojha.levain.ui.components.LevainTopBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -55,9 +56,9 @@ fun StarterEditorScreen(starterId: Long?, onDone: () -> Unit) {
         Column(
             modifier = Modifier
                 .padding(padding)
-                .padding(16.dp)
+                .padding(Spacing.l)
                 .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+            verticalArrangement = Arrangement.spacedBy(Spacing.l),
         ) {
             OutlinedTextField(
                 value = state.name,
@@ -68,7 +69,7 @@ fun StarterEditorScreen(starterId: Long?, onDone: () -> Unit) {
             )
 
             Text("Where does it live?", style = MaterialTheme.typography.titleSmall)
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(Spacing.s)) {
                 FilterChip(
                     selected = state.state == LifecycleState.ACTIVE,
                     onClick = { viewModel.setState(LifecycleState.ACTIVE) },

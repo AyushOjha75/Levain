@@ -25,6 +25,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import com.ayushojha.levain.ui.theme.Spacing
 import com.ayushojha.levain.ui.components.LevainTopBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -76,9 +77,9 @@ fun BakeScreen(starterId: Long, onDone: () -> Unit) {
         Column(
             modifier = Modifier
                 .padding(padding)
-                .padding(16.dp)
+                .padding(Spacing.l)
                 .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+            verticalArrangement = Arrangement.spacedBy(Spacing.l),
         ) {
             OutlinedTextField(
                 value = state.levainNotes,
@@ -88,7 +89,7 @@ fun BakeScreen(starterId: Long, onDone: () -> Unit) {
             )
 
             Text("When was it baked?", style = MaterialTheme.typography.titleSmall)
-            Row(horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp)) {
+            Row(horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(Spacing.s)) {
                 listOf(0 to "Today", 1 to "Yesterday", 2 to "2 days ago").forEach { (days, label) ->
                     androidx.compose.material3.FilterChip(
                         selected = state.daysAgo == days,
@@ -120,7 +121,7 @@ fun BakeScreen(starterId: Long, onDone: () -> Unit) {
                 Icon(Icons.Filled.PhotoCamera, contentDescription = null)
                 Text(
                     if (state.photoPath == null) "  Add photo" else "  Photo attached ✓",
-                    modifier = Modifier.padding(start = 4.dp),
+                    modifier = Modifier.padding(start = Spacing.xs),
                 )
             }
 

@@ -24,6 +24,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import com.ayushojha.levain.ui.theme.Spacing
 import com.ayushojha.levain.ui.components.LevainTopBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -71,12 +72,12 @@ fun ObservationScreen(starterId: Long, onDone: () -> Unit) {
         Column(
             modifier = Modifier
                 .padding(padding)
-                .padding(16.dp)
+                .padding(Spacing.l)
                 .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+            verticalArrangement = Arrangement.spacedBy(Spacing.l),
         ) {
             Text("Rise", style = MaterialTheme.typography.titleSmall)
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(Spacing.s)) {
                 RiseRating.entries.forEach { rating ->
                     FilterChip(
                         selected = state.riseRating == rating,
@@ -104,7 +105,7 @@ fun ObservationScreen(starterId: Long, onDone: () -> Unit) {
 
             Text("Smell", style = MaterialTheme.typography.titleSmall)
             Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(Spacing.s),
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Smell.entries.take(4).forEach { smell ->
@@ -115,7 +116,7 @@ fun ObservationScreen(starterId: Long, onDone: () -> Unit) {
                     )
                 }
             }
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(Spacing.s)) {
                 Smell.entries.drop(4).forEach { smell ->
                     FilterChip(
                         selected = state.smell == smell,
@@ -140,7 +141,7 @@ fun ObservationScreen(starterId: Long, onDone: () -> Unit) {
                 Icon(Icons.Filled.PhotoCamera, contentDescription = null)
                 Text(
                     if (state.photoPath == null) "  Add photo" else "  Photo attached ✓",
-                    modifier = Modifier.padding(start = 4.dp),
+                    modifier = Modifier.padding(start = Spacing.xs),
                 )
             }
 
@@ -174,7 +175,7 @@ internal fun TipCard(tip: String) {
         Text(
             "💡 $tip",
             style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(12.dp),
+            modifier = Modifier.padding(Spacing.m),
         )
     }
 }

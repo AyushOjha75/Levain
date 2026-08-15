@@ -15,6 +15,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import com.ayushojha.levain.ui.theme.Spacing
 import com.ayushojha.levain.ui.components.LevainTopBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -48,8 +49,8 @@ fun FeedingScreen(starterId: Long, feedingId: Long? = null, onDone: () -> Unit) 
         containerColor = MaterialTheme.colorScheme.background,
     ) { padding ->
         Column(
-            modifier = Modifier.padding(padding).padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier.padding(padding).padding(Spacing.l),
+            verticalArrangement = Arrangement.spacedBy(Spacing.l),
         ) {
             if (!state.editing) {
                 Text(
@@ -60,7 +61,7 @@ fun FeedingScreen(starterId: Long, feedingId: Long? = null, onDone: () -> Unit) 
             }
             Text("When?", style = MaterialTheme.typography.titleSmall)
             androidx.compose.foundation.layout.Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(Spacing.s),
             ) {
                 listOf(0 to "Just now", 1 to "1h ago", 3 to "3h ago").forEach { (hours, label) ->
                     androidx.compose.material3.FilterChip(

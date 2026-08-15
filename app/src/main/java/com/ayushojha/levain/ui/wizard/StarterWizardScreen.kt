@@ -26,6 +26,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import com.ayushojha.levain.ui.theme.Spacing
 import com.ayushojha.levain.ui.components.LevainTopBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -67,10 +68,10 @@ fun StarterWizardScreen(onDone: (Long?) -> Unit) {
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
-                    .padding(24.dp)
+                    .padding(Spacing.xl)
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+                verticalArrangement = Arrangement.spacedBy(Spacing.l),
             ) {
                 when (step) {
                     WizardStep.CHOICE -> ChoiceStep(viewModel)
@@ -143,7 +144,7 @@ private fun HomeStep(state: WizardState, viewModel: StarterWizardViewModel) {
         style = MaterialTheme.typography.bodyLarge,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+    Row(horizontalArrangement = Arrangement.spacedBy(Spacing.s)) {
         FilterChip(
             selected = state.home == LifecycleState.ACTIVE,
             onClick = { viewModel.setHome(LifecycleState.ACTIVE) },
