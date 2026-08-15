@@ -209,19 +209,195 @@ skillet on the lower rack with boiling water poured in at load, or a covered roa
 
 ## 2. Canonical focaccia
 
+The reference recipes used throughout this section:
+
+- [The Perfect Loaf — A Simple Sourdough Focaccia](https://www.theperfectloaf.com/a-simple-focaccia/) (TPL)
+- [King Arthur Baking — Big and Bubbly Focaccia](https://www.kingarthurbaking.com/recipes/big-and-bubbly-focaccia-recipe),
+  their 2025 Recipe of the Year — the **yeasted** reference (KAB-Y)
+- [King Arthur Baking — Big and Bubbly Focaccia, Sourdough Edition](https://www.kingarthurbaking.com/recipes/big-and-bubbly-focaccia-sourdough-edition-recipe) —
+  the same formula with ripe starter substituted for commercial yeast (KAB-SD). **This pair is
+  the single most useful source in this document**, because it isolates exactly what changes
+  between the yeasted and sourdough routes with everything else held constant.
+- [Serious Eats — Easy No-Knead Olive-Rosemary Focaccia](https://www.seriouseats.com/easy-no-knead-olive-rosemary-focaccia-with-pistachios-recipe) (SE)
+- [ThermoWorks — Homemade Focaccia: Recipe, Temperatures, and Tips](https://blog.thermoworks.com/homemade-focaccia/) for doneness thermometry
+
 ### 2.1 Flour, hydration and oil
+
+| Source | Flour | Hydration | Oil in dough | Salt |
+| --- | --- | --- | --- | --- |
+| [TPL](https://www.theperfectloaf.com/a-simple-focaccia/) | 30% high-protein (~13%), 70% AP (11–12%) | **76%** (78% counting oil) | **2%** | 1.8% |
+| [KAB-Y](https://www.kingarthurbaking.com/recipes/big-and-bubbly-focaccia-recipe) | 100% all-purpose (360 g) | **~79%** (284 g water) | **5%** (18 g) | 2.5% (9 g) + 5 g sugar |
+| [SE](https://www.seriouseats.com/easy-no-knead-olive-rosemary-focaccia-with-pistachios-recipe) | AP or bread flour (500 g) | **65%** (325 g water) | ~¼ cup, mostly pan/top | 3% (15 g kosher) |
+| [Modernist Pantry, Classic Focaccia](https://blog.modernistpantry.com/recipes/classic-focaccia/) | high-protein white | "high hydration" | present | — |
+
+> **Disagreement worth carrying into the app:** focaccia hydration. TPL and KAB sit at 76–79%;
+> Serious Eats' no-knead version is a clear outlier at **65%**, and secondary sources push as
+> high as **80–88%**. This is not a measurement discrepancy — it is a different design target.
+> The low-hydration route trades open crumb for a dough that can be handled and needs no folds
+> at all; the high-hydration route buys the big irregular bubbles focaccia is prized for but
+> requires folds and a pan to contain it. **Report both routes; don't average to ~72%.**
+
+Note KAB is the only reference here that adds **sugar** (5 g, ~1.4%), for browning. TPL and SE
+do not. Focaccia is otherwise a **lean dough** — oil is layered onto the surface and the pan
+more than into the crumb, which is why [ThermoWorks](https://blog.thermoworks.com/homemade-focaccia/)
+still classes it as lean for doneness purposes.
+
+Focaccia hydration runs **higher than the same baker's loaf hydration** (TPL: 76% focaccia vs
+72% loaf). The pan carries the dough, so it never has to hold its own shape.
 
 ### 2.2 Leavening: sourdough levain vs commercial yeast
 
+This is where focaccia's dual identity lives, and the KAB pair documents it precisely with
+everything else held constant:
+
+| | KAB-Y (yeasted) | KAB-SD (sourdough) |
+| --- | --- | --- |
+| Leaven | **3 g instant yeast** (~0.8%) | **ripe sourdough starter**, no commercial yeast |
+| Levain build step | **none** — yeast goes straight into the mix | **required** — starter must be fed and ripened first |
+| First rise | **1 hour** at 70–75°F | folded into a longer, starter-paced schedule |
+| Pan rise | **2–3 hours** | **4–6 hours** |
+| Total time | ~3 h 40 min | substantially longer |
+
+KAB-SD notes the pan rise runs "anywhere from **4 to 6 hours**" and that the range depends on
+"the ripeness of your starter and the warmth of your kitchen" — i.e. the sourdough route is
+*more* feel-dependent and *less* clock-predictable than the yeasted one, by the source's own
+admission.
+
+TPL's sourdough focaccia uses **levain at 19% of total dough weight** from a 100%-hydration
+starter, with the ripeness cue being simply that the starter is at the point "you'd normally
+give it a refreshment."
+
+**Structural consequence for the app:** the levain build is an **optional leading step** in the
+focaccia sequence. Everything downstream of the mix is identical in *kind* between the two
+routes; only the *durations* stretch. This is the cleanest argument that leavening should be a
+property that scales step durations, not a separate recipe.
+
 ### 2.3 Bulk fermentation and folds
+
+| Source | Bulk duration | Temp | Folds |
+| --- | --- | --- | --- |
+| [TPL](https://www.theperfectloaf.com/a-simple-focaccia/) | **2 hours** | 76–78°F (24–25°C) | **4 sets**, every 30 min, first at 30 min |
+| [KAB-Y](https://www.kingarthurbaking.com/recipes/big-and-bubbly-focaccia-recipe) | **1 hour** | 70–75°F warm room temp | **4 bowl folds** at the end of the hour |
+| [SE](https://www.seriouseats.com/easy-no-knead-olive-rosemary-focaccia-with-pistachios-recipe) | **overnight** at room temp | ambient | **none** — explicitly no-knead, no-stretch |
+
+TPL's mixing is machine-forward (stand mixer, speed 1 for 1–2 min, speed 2 for 5 min, 10 min
+rest, then oil worked in on speed 2 for 1–2 min) with an FDT of **76°F (24°C)**, so the folds
+are structure-building on top of an already-developed dough. KAB and SE build all structure via
+time and folds alone.
+
+KAB's end-of-bulk cue is explicit and observable: after 1 hour "the dough should have **nearly
+doubled** in size and will be **very puffy**."
+
+Focaccia bulk is **markedly shorter than loaf bulk** (1–2 h vs 3–5 h) in every source that
+publishes both, because focaccia carries a second long fermentation in the pan. The total
+fermentation is comparable; it is split differently.
 
 ### 2.4 Panning instead of shaping: pan, oil, stretching
 
+Focaccia has **no pre-shape, no bench rest, no final shape, no banneton, no scoring**. The
+whole shaping block of the sourdough sequence collapses into one step: **transfer to an oiled
+pan and coax to the edges.**
+
+| Source | Pan | Oil in pan |
+| --- | --- | --- |
+| TPL | 9" × 13" rectangular, or two 10" × 2.25" rounds | "liberally oil interior" |
+| KAB | **9" square**, sprayed with nonstick spray **then** 1 Tbsp olive oil, pan tilted to spread evenly | 1 Tbsp in pan, 1 Tbsp on top (26 g total, divided) |
+| Generic high-hydration | half sheet pan (18" × 13") or cast iron | ~¼ cup, spread edge to edge |
+
+The oil is doing two jobs and the sources are consistent on both: it prevents sticking, and it
+**shallow-fries the base** during the bake, which is where focaccia's crisp bottom comes from.
+This is why the quantity is much larger than a normal pan-greasing and why it must reach the
+corners.
+
+**Stretching to the pan is a repeated, gentle, feel-judged operation, not a single action.**
+TPL: "Every 30 minutes for the first hour, uncover the pan and gently stretch the dough with
+wet hands to the pan's edges." A high-hydration dough will retract; you stretch, it relaxes,
+you stretch again. The cue to stop is simply that the dough **stays** at the edges rather than
+pulling back.
+
+Wet hands (TPL) or oiled hands (KAB) — both work; the point is preventing stick.
+
 ### 2.5 Pan proof: room temperature vs cold retard
+
+| Route | Duration | Cue |
+| --- | --- | --- |
+| [KAB-Y](https://www.kingarthurbaking.com/recipes/big-and-bubbly-focaccia-recipe) room temp | **2–3 hours** | "until it **nearly reaches the corners** and is **very close to the top edge**" |
+| [KAB-SD](https://www.kingarthurbaking.com/recipes/big-and-bubbly-focaccia-sourdough-edition-recipe) room temp | **4–6 hours** | "until it's **marshmallowy and jiggly**; the dough should nearly fill the corners of the pan and be very close to the top edge" |
+| [TPL](https://www.theperfectloaf.com/a-simple-focaccia/) room temp | **4 hours** at 76–78°F | puffy, filled to the pan edges, bubbles visible under the surface |
+| KAB cold retard | **8–24 hours** in the fridge, taken *before* panning (after the bowl folds) | — |
+| TPL cold retard | after 2 h in the pan, cover airtight and refrigerate overnight | must **come back to room temperature before baking** |
+
+> **Disagreement worth carrying into the app:** *where* the cold retard sits in the sequence.
+> KAB retards **in the bowl, before panning** (8–24 h). TPL retards **in the pan, mid-proof**
+> (2 h in pan, then overnight). Both are legitimate and they produce different schedules — the
+> KAB route lets you pan and bake in a 3-hour window the next day; the TPL route lets you go
+> essentially straight from fridge to oven. This is a real fork in the step graph, not a detail.
+
+Note also the asymmetry with the sourdough loaf: the **loaf bakes straight from the fridge**,
+but TPL's retarded **focaccia must warm up first**. A cold focaccia will not spring, and the
+pan insulates the base. Do not generalise "bake cold" across the two breads.
+
+"Marshmallowy and jiggly" (KAB-SD) is the single best-phrased feel cue found in this research
+and should be used near-verbatim.
 
 ### 2.6 Dimpling
 
+Dimpling replaces scoring. It happens **after** the pan proof, immediately before the bake, and
+it is a feel-judged operation with a hard constraint attached.
+
+- **Depth:** all the way down. TPL: dimples "go **all the way down to the bottom of the pan**."
+  KAB: "press your fingertips into the dough **until they reach the bottom of the pan**."
+- **Spacing:** KAB specifies dimples "spaced about **1½" apart**"; TPL says "evenly spaced."
+- **Hands:** oiled (KAB) or wet (TPL).
+- **The constraint, and the cue:** KAB — "The goal is to thoroughly dimple the dough **without
+  deflating it** — aim for **decisive yet gentle** motions." The observable failure mode is the
+  dough sighing flat and not recovering; a correctly dimpled slab keeps its puffed profile
+  between the dimples.
+
+Dimpling is also what creates the pockets that hold the surface oil, so the two steps are
+paired: dimple, then **drizzle 1–2 Tbsp olive oil over the surface** — KAB notes "it's OK if it
+pools in some dimples" — then flaky/coarse sea salt, then herbs or toppings pressed **gently**
+into the dough.
+
 ### 2.7 Bake: oven temperature, time, doneness
+
+| Source | Oven temp | Rack | Bake time |
+| --- | --- | --- | --- |
+| [KAB-Y](https://www.kingarthurbaking.com/recipes/big-and-bubbly-focaccia-recipe) | **475°F (246°C)** | lower third | **15–18 min** |
+| [TPL](https://www.theperfectloaf.com/a-simple-focaccia/) | **450°F (232°C)** | bottom third | **~30 min**, rotate front-to-back halfway |
+| [ThermoWorks](https://blog.thermoworks.com/homemade-focaccia/) | **450°F (232°C)** | — | **20–30 min**, by thickness |
+| [Modernist Pantry](https://blog.modernistpantry.com/recipes/classic-focaccia/) | **425°F (218°C)** | — | — |
+
+> **Disagreement worth carrying into the app:** focaccia bake time spans **15 to 30 minutes**
+> and temperature **425 to 475°F** — a wider spread than for the loaf. The driver is **dough
+> depth**, not source preference: KAB's is a 9" square (small, hot, fast), TPL's is a 9"×13"
+> (thicker slab, cooler, slower). Bake time for focaccia is therefore **pan-dependent** and
+> must not be presented as a fixed number. Every source agrees on the **lower rack**, which is
+> what crisps the oiled base.
+
+**No steam.** This is a categorical divergence from the loaf. Focaccia is baked in a dry oven —
+no Dutch oven, no lid, no water pan. Steam would soften the crust that the oil and the hot
+lower rack are working to crisp.
+
+**Doneness cues:**
+
+- **Colour (primary, all sources):** KAB — "**brown in the highest spots and golden in the
+  crevices**." TPL — "**deeply coloured on top**." The two-tone description is the useful one:
+  the raised areas between dimples brown first.
+- **Internal temperature: 190–210°F (88–99°C)**, per
+  [ThermoWorks](https://blog.thermoworks.com/homemade-focaccia/) — a slightly lower and much
+  wider window than the loaf's 205–210°F.
+- **What explicitly does *not* work:** ThermoWorks warns against judging focaccia "by colour
+  alone" or by thumping the bottom, because the oiled surface browns before the interior is
+  set — the failure mode is a doughy centre under a convincing crust. **The hollow-tap test,
+  valid for the loaf, is invalid for focaccia.**
+- **Base check:** lift a corner with a spatula — the bottom should be uniformly golden and
+  crisp, not pale or oil-logged.
+- TPL adds an active-monitoring instruction rather than a fixed time: "Keep an eye on it during
+  the last 5 minutes and pull it out if it's colouring too quickly."
+- **Cooling:** focaccia is served warm and needs only a short rest; it does not require the
+  loaf's 1–2 hour cool-before-slicing. Lift it out of the pan onto a rack promptly so the base
+  doesn't steam itself soft.
 
 ---
 
