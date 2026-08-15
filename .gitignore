@@ -19,3 +19,6 @@ local.properties
 *.apk
 *.aab
 captures/
+
+# Agent worktrees are throwaway clones, never repo content
+.claude/worktrees/
