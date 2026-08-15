@@ -629,3 +629,35 @@ source, and treat the book's numbers as still outstanding.
 ---
 
 ## 6. Source list
+
+**Primary — sourdough loaf**
+
+- [The Perfect Loaf — Beginner's Sourdough Bread](https://www.theperfectloaf.com/beginners-sourdough-bread/) — the most complete single set of numbers found; full formula, DDT, fold schedule, retard, bake, doneness.
+- [The Perfect Loaf — The Ultimate Guide to Bread Dough Bulk Fermentation](https://www.theperfectloaf.com/guides/the-ultimate-guide-to-bread-dough-bulk-fermentation/) — the temperature/duration relationship and the argument against percent-rise as a primary cue.
+- [The Perfect Loaf — What Is Dough Hydration?](https://www.theperfectloaf.com/dough-hydration/)
+- [The Perfect Loaf — High(er) Hydration Sourdough Bread](https://www.theperfectloaf.com/higher-hydration-sourdough-bread/)
+- [King Arthur Baking — Guide to baking sourdough bread](https://www.kingarthurbaking.com/learn/sourdough)
+- [King Arthur Baking — Extra-Tangy Sourdough Bread](https://www.kingarthurbaking.com/recipes/extra-tangy-sourdough-bread-recipe)
+- [King Arthur Baking — Bulk fermentation, explained](https://www.kingarthurbaking.com/blog/2019/07/22/bulk-fermentation) — jiggle, taut top, retained indent.
+- [King Arthur Baking — The float test for yeast dough and sourdough starter](https://www.kingarthurbaking.com/blog/2019/01/02/the-float-test-for-yeast-dough-and-sourdough-starter)
+- [King Arthur Baking — What is proofing bread?](https://www.kingarthurbaking.com/blog/2023/08/31/proofing-bread) — the poke test.
+- [King Arthur Baking — A visual guide to bread baking](https://www.kingarthurbaking.com/blog/2023/12/07/visual-guide-bread-baking)
+- Chad Robertson, *Tartine Bread* — Basic Country Bread, via [Feeling Foodish's detailed walkthrough](https://feelingfoodish.com/tartine-bread/), [Farine](http://www.farine-mc.com/2010/10/chad-robertsons-basic-country-bread.html), and [The Fresh Loaf](https://www.thefreshloaf.com/node/64305/tartine-basic-country-bread).
+
+**Primary — focaccia**
+
+- [The Perfect Loaf — A Simple Sourdough Focaccia](https://www.theperfectloaf.com/a-simple-focaccia/) — full sourdough focaccia formula, pan proof, dimpling, bake.
+- [King Arthur Baking — Big and Bubbly Focaccia](https://www.kingarthurbaking.com/recipes/big-and-bubbly-focaccia-recipe) (2025 Recipe of the Year) — the yeasted reference.
+- [King Arthur Baking — Big and Bubbly Focaccia, Sourdough Edition](https://www.kingarthurbaking.com/recipes/big-and-bubbly-focaccia-sourdough-edition-recipe) — the controlled yeasted/sourdough comparison; source of "marshmallowy and jiggly."
+- [King Arthur Baking — We finally found it: our forever focaccia](https://www.kingarthurbaking.com/blog/2025/01/03/recipe-of-the-year-focaccia)
+- [The Perfect Loaf — Focaccia Pugliese](https://www.theperfectloaf.com/focaccia-pugliese-focaccia-with-potato/) — flour-strength rationale for high-hydration, enriched focaccia.
+- [Serious Eats — Easy No-Knead Olive-Rosemary Focaccia](https://www.seriouseats.com/easy-no-knead-olive-rosemary-focaccia-with-pistachios-recipe) — the low-hydration, no-fold outlier. *Retrieved via search excerpts; see §5.*
+- [ThermoWorks — Homemade Focaccia: Recipe, Temperatures, and Tips](https://blog.thermoworks.com/homemade-focaccia/) — internal-temperature doneness and the warning against tap/colour tests.
+- [Modernist Pantry — Classic Focaccia](https://blog.modernistpantry.com/recipes/classic-focaccia/) — *see the caveat in §5; not* Modernist Bread *itself.*
+- [Wordloaf — High-hydration sourdough focaccia](https://wordloaf.substack.com/p/high-hydration-sourdough-focaccia) (Andrew Janjigian) — 85% hydration + 5% oil, four in-bowl folds, cold proof in the final pan shape. *Paywalled beyond the excerpt.*
+
+**Still outstanding**
+
+- *Modernist Bread* (Myhrvold & Migoya) proper — the volume with the systematic temperature/time tables. Not available online; would settle disagreement #1 and #5 better than any source here.
+- Direct verification of the Serious Eats focaccia parameters (§5).
+
