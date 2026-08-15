@@ -1,0 +1,160 @@
+{
+  "id": "sourdough-country",
+  "name": "Country sourdough",
+  "summary": "A 72% hydration loaf with a little whole wheat and rye. Overnight in the fridge, baked in a Dutch oven.",
+  "breadType": "sourdough",
+  "requiresStarter": true,
+  "referenceBatch": "1 loaf (about 900 g)",
+  "contentVersion": 1,
+  "ingredients": [
+    { "name": "Ripe starter", "grams": 38, "phase": "levain" },
+    { "name": "Bread flour", "grams": 38, "phase": "levain" },
+    { "name": "Whole wheat flour", "grams": 38, "phase": "levain" },
+    { "name": "Water, warm", "grams": 76, "phase": "levain" },
+
+    { "name": "Bread flour", "grams": 400, "bakersPercent": 80, "phase": "dough" },
+    { "name": "Whole wheat flour", "grams": 75, "bakersPercent": 15, "phase": "dough" },
+    { "name": "Rye flour", "grams": 25, "bakersPercent": 5, "phase": "dough" },
+    { "name": "Water", "grams": 360, "bakersPercent": 72, "phase": "dough" },
+    { "name": "Fine sea salt", "grams": 10, "bakersPercent": 2, "phase": "dough" },
+    { "name": "Ripe levain", "grams": 150, "bakersPercent": 30, "phase": "dough" }
+  ],
+  "steps": [
+    {
+      "title": "Build the levain",
+      "instruction": "Mix the ripe starter with the levain flours and warm water in a jar. Cover loosely and leave somewhere around 24°C.",
+      "kind": "ACTION",
+      "phase": "levain"
+    },
+    {
+      "title": "Let the levain ripen",
+      "instruction": "Leave it be. You are waiting for it to reach its peak — this is the one thing in the whole bake you cannot rush or reschedule.",
+      "kind": "JUDGED",
+      "durationMinutes": 330,
+      "cue": "Domed and bubbly on top, at the sides and through the middle. It smells sweetly sour rather than sharp, and sits just at or just past its peak. If you are unsure, a spoonful should float in water.",
+      "phase": "levain"
+    },
+    {
+      "title": "Mix the flours and water",
+      "instruction": "Combine the dough flours with the water until no dry flour remains. Hold back the salt and levain for now.",
+      "kind": "ACTION",
+      "phase": "mix"
+    },
+    {
+      "title": "Autolyse",
+      "instruction": "Cover and rest. The flour hydrates and the gluten starts organising itself without you doing anything.",
+      "kind": "TIMED",
+      "durationMinutes": 50,
+      "phase": "mix"
+    },
+    {
+      "title": "Add the levain and salt",
+      "instruction": "Add the ripe levain and the salt, and squeeze the dough through your fingers until both disappear into it.",
+      "kind": "ACTION",
+      "phase": "mix"
+    },
+    {
+      "title": "Check the dough temperature",
+      "instruction": "Aim for 24–25°C. Warmer ferments faster, cooler slower — this number is what makes the rest of today's timings roughly right.",
+      "kind": "ACTION",
+      "phase": "mix"
+    },
+    {
+      "title": "Fold the dough",
+      "instruction": "When the timer goes: wet one hand, lift one side of the dough up and fold it into the middle, then turn the bowl and repeat three more times. Each set should feel tighter and smoother than the last.",
+      "kind": "TIMED",
+      "durationMinutes": 30,
+      "repeatCount": 3,
+      "repeatEveryMinutes": 30,
+      "phase": "bulk"
+    },
+    {
+      "title": "Bulk fermentation",
+      "instruction": "Now leave it alone and watch the dough, not the clock. Warmer kitchens finish sooner.",
+      "kind": "JUDGED",
+      "durationMinutes": 240,
+      "cue": "Risen by a quarter to a half — more with white flour, less with whole grain. Puffy, jiggling as one mass when you shake the bowl. The top is taut and slightly domed, and the edge where dough meets bowl curves up rather than sagging.",
+      "phase": "bulk"
+    },
+    {
+      "title": "Pre-shape",
+      "instruction": "Turn the dough onto an unfloured counter and pull it into a loose round with a bench knife. Don't force it tight.",
+      "kind": "ACTION",
+      "phase": "shape"
+    },
+    {
+      "title": "Bench rest",
+      "instruction": "Leave it uncovered. It will spread a little — that's the gluten relaxing so you can shape it properly.",
+      "kind": "TIMED",
+      "durationMinutes": 25,
+      "phase": "shape"
+    },
+    {
+      "title": "Shape the loaf",
+      "instruction": "Shape into a tight round or oval and place it seam-side up in a floured banneton or a bowl lined with a tea towel.",
+      "kind": "ACTION",
+      "phase": "shape"
+    },
+    {
+      "title": "Rest at room temperature",
+      "instruction": "A short rest on the counter before the fridge takes over.",
+      "kind": "TIMED",
+      "durationMinutes": 20,
+      "phase": "proof"
+    },
+    {
+      "title": "Cold retard overnight",
+      "instruction": "Cover and refrigerate. The cold slows the yeast far more than the acid-producing bacteria, which is where the flavour comes from — and it means you bake when it suits you.",
+      "kind": "TIMED",
+      "durationMinutes": 900,
+      "phase": "proof"
+    },
+    {
+      "title": "Preheat the oven and Dutch oven",
+      "instruction": "Put the Dutch oven in cold and bring the whole thing up to 250°C. It needs to be properly saturated with heat, not just hot.",
+      "kind": "TIMED",
+      "durationMinutes": 60,
+      "phase": "bake"
+    },
+    {
+      "title": "Score the loaf",
+      "instruction": "Turn the cold dough straight out onto parchment and slash it decisively, about 1 cm deep. The loaf goes in cold — do not let it warm up first.",
+      "kind": "ACTION",
+      "phase": "bake"
+    },
+    {
+      "title": "Bake covered",
+      "instruction": "Lower it in, lid on. The dough's own steam is trapped against the crust, which is what lets it spring.",
+      "kind": "TIMED",
+      "durationMinutes": 20,
+      "phase": "bake"
+    },
+    {
+      "title": "Take the lid off",
+      "instruction": "Remove the lid and drop the oven to 230°C.",
+      "kind": "ACTION",
+      "phase": "bake"
+    },
+    {
+      "title": "Bake uncovered",
+      "instruction": "Now the crust colours and sets.",
+      "kind": "TIMED",
+      "durationMinutes": 25,
+      "phase": "bake"
+    },
+    {
+      "title": "Check it's done",
+      "instruction": "Take it out and look at it properly before deciding.",
+      "kind": "JUDGED",
+      "cue": "Deep mahogany — darker than feels comfortable. Hollow when tapped on the base. If you have a probe, 96–99°C in the middle.",
+      "phase": "bake"
+    },
+    {
+      "title": "Cool completely",
+      "instruction": "On a rack, and genuinely cool — the crumb is still setting. Cutting hot bread is the last way left to ruin it.",
+      "kind": "TIMED",
+      "durationMinutes": 90,
+      "phase": "bake"
+    }
+  ]
+}

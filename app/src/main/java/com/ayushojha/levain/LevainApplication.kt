@@ -9,6 +9,7 @@ import com.ayushojha.levain.reminders.AlarmDueScheduler
 import com.ayushojha.levain.reminders.DueNotificationPresenter
 import com.ayushojha.levain.reminders.ReminderCoordinator
 import java.time.Clock
+import kotlinx.coroutines.launch
 
 /** Manual DI: one graph, built lazily, no framework. */
 class AppContainer(context: Context) {
@@ -23,10 +24,24 @@ class AppContainer(context: Context) {
         database,
         java.io.File(context.filesDir, "photos"),
     )
+    val recipeCatalog = com.ayushojha.levain.data.RecipeCatalog(
+        database,
+        com.ayushojha.levain.data.AssetRecipeSource(context.assets),
+    )
 }
 
 class LevainApplication : Application() {
     val container: AppContainer by lazy { AppContainer(this) }
+
+    override fun onCreate() {
+        super.onCreate()
+        // Bundled recipes are content: load them into Room on first run and
+        // whenever a shipped contentVersion moves. Cheap and idempotent when
+        // everything is already current.
+        kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
+            runCatching { container.recipeCatalog.seed() }
+        }
+    }
 }
 
 val Context.appContainer: AppContainer

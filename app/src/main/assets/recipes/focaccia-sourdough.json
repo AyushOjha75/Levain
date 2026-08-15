@@ -1,0 +1,146 @@
+{
+  "id": "focaccia-sourdough",
+  "name": "Sourdough focaccia",
+  "summary": "High hydration, levain-built, proofed in an oiled pan and dimpled just before it bakes.",
+  "breadType": "focaccia",
+  "requiresStarter": true,
+  "referenceBatch": "one 9×13 inch pan",
+  "contentVersion": 1,
+  "ingredients": [
+    { "name": "Ripe starter", "grams": 25, "phase": "levain" },
+    { "name": "Bread flour", "grams": 50, "phase": "levain" },
+    { "name": "Water, warm", "grams": 50, "phase": "levain" },
+
+    { "name": "All-purpose flour", "grams": 350, "bakersPercent": 70, "phase": "dough" },
+    { "name": "Bread flour", "grams": 150, "bakersPercent": 30, "phase": "dough" },
+    { "name": "Water", "grams": 380, "bakersPercent": 76, "phase": "dough" },
+    { "name": "Fine sea salt", "grams": 9, "bakersPercent": 1.8, "phase": "dough" },
+    { "name": "Olive oil", "grams": 10, "bakersPercent": 2, "phase": "dough" },
+    { "name": "Ripe levain", "grams": 95, "bakersPercent": 19, "phase": "dough" },
+
+    { "name": "Olive oil, for the pan", "grams": 30, "phase": "pan" },
+    { "name": "Flaky salt", "grams": 3, "phase": "topping" }
+  ],
+  "steps": [
+    {
+      "title": "Build the levain",
+      "instruction": "Mix the ripe starter with the levain flour and warm water. Cover loosely and leave somewhere around 24°C.",
+      "kind": "ACTION",
+      "phase": "levain"
+    },
+    {
+      "title": "Let the levain ripen",
+      "instruction": "Wait for the peak. A focaccia is forgiving about most things and unforgiving about being built on a sluggish levain.",
+      "kind": "JUDGED",
+      "durationMinutes": 330,
+      "cue": "Domed and bubbly through the middle as well as on top, smelling sweetly sour. Roughly the point where you'd normally give your starter its next feed.",
+      "phase": "levain"
+    },
+    {
+      "title": "Mix the dough",
+      "instruction": "Combine the flours, water, salt and ripe levain until no dry flour remains. It will be slack and sticky — that is correct at this hydration.",
+      "kind": "ACTION",
+      "phase": "mix"
+    },
+    {
+      "title": "Rest, then work in the olive oil",
+      "instruction": "After the rest, add the olive oil and squeeze it through until the dough stops looking greasy and comes back together.",
+      "kind": "TIMED",
+      "durationMinutes": 10,
+      "phase": "mix"
+    },
+    {
+      "title": "Check the dough temperature",
+      "instruction": "Aim for about 24°C. This is what makes the timings below roughly right for your kitchen.",
+      "kind": "ACTION",
+      "phase": "mix"
+    },
+    {
+      "title": "Fold the dough",
+      "instruction": "When the timer goes: wet a hand, lift one side of the dough up and over into the middle, turn the bowl, repeat around. Four sets, and it will go from soup to something that holds itself together.",
+      "kind": "TIMED",
+      "durationMinutes": 30,
+      "repeatCount": 4,
+      "repeatEveryMinutes": 30,
+      "phase": "bulk"
+    },
+    {
+      "title": "Bulk fermentation",
+      "instruction": "Shorter than a loaf's — the long rise happens in the pan, not the bowl.",
+      "kind": "JUDGED",
+      "durationMinutes": 90,
+      "cue": "Nearly doubled and very puffy, the surface domed and showing bubbles.",
+      "phase": "bulk"
+    },
+    {
+      "title": "Oil the pan generously",
+      "instruction": "Pour the pan oil in and spread it up the sides. Be more generous than feels sensible — this is what fries the base to a crisp.",
+      "kind": "ACTION",
+      "phase": "pan"
+    },
+    {
+      "title": "Transfer the dough to the pan",
+      "instruction": "Tip the dough in gently, keeping as much gas in it as you can, and turn it over once so it is coated in oil.",
+      "kind": "ACTION",
+      "phase": "pan"
+    },
+    {
+      "title": "Stretch it toward the corners",
+      "instruction": "Every half hour, take the dough by two corners and stretch it gently outward. It will pull back at first; do not fight it, just come back later.",
+      "kind": "JUDGED",
+      "durationMinutes": 30,
+      "repeatCount": 3,
+      "repeatEveryMinutes": 30,
+      "cue": "The dough stops retracting — it stays where you put it instead of pulling back from the corners within a minute.",
+      "phase": "pan"
+    },
+    {
+      "title": "Pan proof",
+      "instruction": "Cover and leave it. This is the long one, and it's the step that decides whether you get bubbles.",
+      "kind": "JUDGED",
+      "durationMinutes": 300,
+      "cue": "Marshmallowy and jiggly, filling the corners and sitting close to the top edge of the pan, with large bubbles visible under the surface.",
+      "phase": "pan"
+    },
+    {
+      "title": "Preheat the oven",
+      "instruction": "230°C. If you retarded this dough in the fridge overnight, take it out now and let it come back to room temperature — unlike a loaf, focaccia must not go into the oven cold.",
+      "kind": "TIMED",
+      "durationMinutes": 25,
+      "phase": "bake"
+    },
+    {
+      "title": "Dimple it",
+      "instruction": "Oil your fingers and press straight down, all the way to the bottom of the pan, about 4 cm apart.",
+      "kind": "JUDGED",
+      "cue": "Your fingertips reach the pan floor and the dough between the dimples stays puffed. If it sighs flat and doesn't recover, you pressed too hard.",
+      "phase": "bake"
+    },
+    {
+      "title": "Drizzle and salt",
+      "instruction": "Olive oil over the whole surface so it pools in the dimples, then flaky salt. Toppings now if you're using them.",
+      "kind": "ACTION",
+      "phase": "bake"
+    },
+    {
+      "title": "Bake",
+      "instruction": "Middle shelf.",
+      "kind": "TIMED",
+      "durationMinutes": 27,
+      "phase": "bake"
+    },
+    {
+      "title": "Check it's done",
+      "instruction": "Lift an edge with a spatula and look underneath before you commit.",
+      "kind": "JUDGED",
+      "cue": "Brown on the raised spots, golden in the crevices, and the base evenly golden and crisp — not pale, not oil-logged. 88–99°C inside if you have a probe. Don't tap it for hollowness; that test doesn't work on focaccia.",
+      "phase": "bake"
+    },
+    {
+      "title": "Lift it out of the pan",
+      "instruction": "Onto a rack straight away, or the residual oil steams the base soft.",
+      "kind": "ACTION",
+      "phase": "bake"
+    }
+  ]
+}

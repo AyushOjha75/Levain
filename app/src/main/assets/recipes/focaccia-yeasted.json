@@ -1,0 +1,121 @@
+{
+  "id": "focaccia-yeasted",
+  "name": "Yeasted focaccia",
+  "summary": "The same bread on commercial yeast — no starter, no levain build, on the table in an afternoon.",
+  "breadType": "focaccia",
+  "requiresStarter": false,
+  "referenceBatch": "one 9×13 inch pan",
+  "contentVersion": 1,
+  "ingredients": [
+    { "name": "All-purpose flour", "grams": 360, "bakersPercent": 100, "phase": "dough" },
+    { "name": "Water, lukewarm", "grams": 284, "bakersPercent": 79, "phase": "dough" },
+    { "name": "Instant yeast", "grams": 3, "bakersPercent": 0.8, "phase": "dough" },
+    { "name": "Fine sea salt", "grams": 9, "bakersPercent": 2.5, "phase": "dough" },
+    { "name": "Sugar", "grams": 5, "bakersPercent": 1.4, "phase": "dough" },
+    { "name": "Olive oil", "grams": 18, "bakersPercent": 5, "phase": "dough" },
+    { "name": "Olive oil, for the pan", "grams": 30, "phase": "pan" },
+    { "name": "Flaky salt", "grams": 3, "phase": "topping" }
+  ],
+  "steps": [
+    {
+      "title": "Mix the dough",
+      "instruction": "Stir the flour, lukewarm water, yeast, salt and sugar together until no dry flour remains. No starter, no levain build — the yeast goes straight in.",
+      "kind": "ACTION",
+      "phase": "mix"
+    },
+    {
+      "title": "Rest, then work in the olive oil",
+      "instruction": "After the rest, add the olive oil and squeeze it through until the dough comes back together.",
+      "kind": "TIMED",
+      "durationMinutes": 10,
+      "phase": "mix"
+    },
+    {
+      "title": "Fold the dough",
+      "instruction": "When the timer goes: wet a hand, lift one side up and over into the middle, turn the bowl, repeat around.",
+      "kind": "TIMED",
+      "durationMinutes": 30,
+      "repeatCount": 2,
+      "repeatEveryMinutes": 30,
+      "phase": "bulk"
+    },
+    {
+      "title": "First rise",
+      "instruction": "Commercial yeast is far more predictable than a starter, so this one is close to the clock — but still look before you move on.",
+      "kind": "JUDGED",
+      "durationMinutes": 60,
+      "cue": "Nearly doubled and puffy, with bubbles visible at the surface.",
+      "phase": "bulk"
+    },
+    {
+      "title": "Oil the pan generously",
+      "instruction": "Pour the pan oil in and spread it up the sides. This is what crisps the base.",
+      "kind": "ACTION",
+      "phase": "pan"
+    },
+    {
+      "title": "Transfer the dough to the pan",
+      "instruction": "Tip it in gently and turn it once so it's coated in oil.",
+      "kind": "ACTION",
+      "phase": "pan"
+    },
+    {
+      "title": "Stretch it toward the corners",
+      "instruction": "Every half hour, stretch the dough gently outward by two corners. If it pulls back, leave it and come back.",
+      "kind": "JUDGED",
+      "durationMinutes": 30,
+      "repeatCount": 2,
+      "repeatEveryMinutes": 30,
+      "cue": "The dough stops retracting — it stays where you put it instead of pulling back within a minute.",
+      "phase": "pan"
+    },
+    {
+      "title": "Pan proof",
+      "instruction": "Cover and leave it somewhere warm.",
+      "kind": "JUDGED",
+      "durationMinutes": 150,
+      "cue": "Marshmallowy and jiggly, nearly filling the corners and sitting close to the top edge of the pan, with large bubbles under the surface.",
+      "phase": "pan"
+    },
+    {
+      "title": "Preheat the oven",
+      "instruction": "230°C. If you retarded this dough in the fridge, take it out now and let it come back to room temperature — focaccia must not go into the oven cold.",
+      "kind": "TIMED",
+      "durationMinutes": 25,
+      "phase": "bake"
+    },
+    {
+      "title": "Dimple it",
+      "instruction": "Oil your fingers and press straight down to the bottom of the pan, about 4 cm apart.",
+      "kind": "JUDGED",
+      "cue": "Your fingertips reach the pan floor and the dough between the dimples stays puffed. If it sighs flat and doesn't recover, you pressed too hard.",
+      "phase": "bake"
+    },
+    {
+      "title": "Drizzle and salt",
+      "instruction": "Olive oil over the surface so it pools in the dimples, then flaky salt and any toppings.",
+      "kind": "ACTION",
+      "phase": "bake"
+    },
+    {
+      "title": "Bake",
+      "instruction": "Middle shelf.",
+      "kind": "TIMED",
+      "durationMinutes": 25,
+      "phase": "bake"
+    },
+    {
+      "title": "Check it's done",
+      "instruction": "Lift an edge with a spatula and look underneath before you commit.",
+      "kind": "JUDGED",
+      "cue": "Brown on the raised spots, golden in the crevices, base evenly golden and crisp — not pale, not oil-logged. 88–99°C inside if you have a probe. Don't tap it for hollowness; that test doesn't work on focaccia.",
+      "phase": "bake"
+    },
+    {
+      "title": "Lift it out of the pan",
+      "instruction": "Onto a rack straight away, or the residual oil steams the base soft.",
+      "kind": "ACTION",
+      "phase": "bake"
+    }
+  ]
+}

@@ -115,6 +115,12 @@ interface LevainDao {
     @Query("SELECT * FROM recipe_step WHERE recipeId = :recipeId ORDER BY position")
     suspend fun getStepTemplates(recipeId: String): List<RecipeStepTemplate>
 
+    @Query("DELETE FROM recipe_ingredient WHERE recipeId = :recipeId")
+    suspend fun deleteIngredientsFor(recipeId: String)
+
+    @Query("DELETE FROM recipe_step WHERE recipeId = :recipeId")
+    suspend fun deleteStepTemplatesFor(recipeId: String)
+
     // --- Bake steps (snapshotted onto a Bake at start) ---
 
     @Insert
